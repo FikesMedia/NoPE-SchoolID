@@ -1,30 +1,35 @@
-console.log("Current Directory "+process.cwd());
-
-const shell = require('node-powershell');
-//Overlay
-document.getElementById("overlay").style.display = "block";
-//User DB
-let ps1 = new shell({
-	executionPolicy: 'Bypass',
-	noProfile: true
+//Setup Page
+$(document).ready(function() { 
+	//Prevent form Submission
+	$("form").submit(function(e){
+		e.preventDefault();
+	});
+	UIkit.modal("#loadingUsers").show();
 });
-ps1.addCommand(process.cwd()+'\\www\\assets\\ps1\\addb.ps1')
-ps1.invoke()
-.then(output => {
+
+//GET JSON Database
+$.getJSON( "/ps1/get/ad2xml.ps1", function( output ) {
 	console.log("Creating User Database");
 	console.log(output);
-	var UserDB = JSON.parse(output);
+	var UserDB = output; //JSON.parse(output);
+	UIkit.modal("#loadingUsers").hide();
 	$("#searchusername").easyAutocomplete(
 		{
 			data: UserDB,
 			getValue: "SamAccountName",
+			template: {
+				type: "custom",
+				method: function(value, item){
+					return item.EmployeeID + " - " + item.Name;
+				}
+			},
 			requestDelay: 100,
 			list: {
 				maxNumberOfElements: 15,
 				onLoadEvent: function(){
 					document.getElementById('updateInfoBtn').setAttribute("disabled", "");
 					document.getElementById('updatePhotoBtn').setAttribute("disabled", "");
-					document.getElementById('printBTN').setAttribute("disabled", "");
+					document.getElementById('printBtn').setAttribute("disabled", "");
 					
 
 				},
@@ -41,7 +46,7 @@ ps1.invoke()
 			}
 		}
 	);
-	document.getElementById("overlay").style.display = "none";
+	//document.getElementById("overlay").style.display = "none";
 })
 .catch(err => {
 	console.log("Failed Creating DB");
@@ -49,7 +54,65 @@ ps1.invoke()
   ps1.dispose();
 });
 
+function GetUserInformation(Username) {
 
+
+	var data = {
+		searchUsername: Username
+	};
+	$.ajax({
+		url: "ps1/post/userinfo.ps1",
+		data: JSON.stringify(data),
+		type: "post",
+		headers: {
+			"content-type": "text/plain;charset=UTF-8"
+		},
+		beforeSend: function (){
+			console.log("Sending ..." + JSON.stringify(data));
+		},
+		error: function() {
+			console.log("Error");
+		},
+		success: function (data){
+			console.log(data);
+		}
+	});
+
+}
+
+/*
+        
+        var formData = JSON.stringify('{"searchUsername": "'+ Username +'"}');
+
+		console.log("THIS FORM " + formData);
+
+		$.ajax({
+            url : "ps1/post/userinfo.ps1",
+            type: "POST",
+            data : formData,
+            //contentType: "application/json",
+            success: function(data, textStatus, jqXHR)
+            {
+				console.log("POST MADE")
+					var debugMode = 1;
+                //Output if Debig ON
+                if (debugMode == 1) { console.log(data); }
+                try { 
+                    var parsed = JSON.parse(data);
+                    
+                } catch(error) {
+                    console.log(error + " " + data);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                //document.getElementById("loginMessage").innerHTML = "Something went wrong.";
+                console.log(errorThrown);
+            }
+        });
+}
+
+/*
 function GetUserInformation(Username) {
 	
 	let ps = new shell({
@@ -116,6 +179,7 @@ function GetUserInformation(Username) {
 	  ps.dispose();
 	});
 }
+*/
 
 
 $(document).ready(function() {

@@ -185,13 +185,13 @@ app.get('/ps1/get/:script', function(req, res) {
 // Powershell POST Processor
 //
 app.post('/ps1/post/:script', function(req, res) {
-	if (validateSessionInformation(req) == false){
-		return "Not Authenticated";
-	}
+	//if (validateSessionInformation(req) == false){
+	//	return "Not Authenticated";
+	//}
 	console.log("POST " + req.params);
 
     const script = req.params.script;
-	const psparams = JSON.stringify(req.body);
+	const psparams = req.body;//JSON.stringify(req.body);
 	
 	let ps1 = new shell({
 		executionPolicy: 'Bypass',
