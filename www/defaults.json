@@ -1,0 +1,10 @@
+{
+    "Company" : "Evadale ISD",
+    "Title" : "Student",
+    "EmpID" : "000000",
+    "BadgeID" : "000000",
+    "FirstName" : "John",
+    "LastName" : "Doe",
+    "BGColor" : "EDFF00",
+	"TXTColor":  "#002466"
+}

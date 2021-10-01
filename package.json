@@ -1,0 +1,26 @@
+{
+  "name": "nodeexpresspowershell",
+  "version": "1.0.0",
+  "description": "Node Express Powershell Web Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 1"
+  },
+  "author": "FikesMedia LLC",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "client-sessions": "^0.8.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
+    "memorystore": "^1.6.2",
+    "node-powershell": "^4.0.0",
+    "node-windows": "^1.0.0-beta.5",
+    "path": "^0.12.7",
+    "sqlite3": "^5.0.0",
+    "uuid": "^8.3.0"
+  }
+}

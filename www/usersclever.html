@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Home - School ID</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="assets/css/Select-Search.css">
+    <link rel="stylesheet" href="assets/css/smoothproducts.css">
+    <link rel="stylesheet" href="assets/css/autocomplete.min.css">
+    <link rel="stylesheet" href="assets/css/overlay.css">
+</head>
+
+<body>
+    <div id="overlay" onclick="">
+        <div id="overlaytext">Loading Users . . .</div>
+    </div>
+    <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+        <div class="container"><a class="navbar-brand logo" href="#">School ID</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse"
+                id="navcol-1">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item" role="presentation"><a class="nav-link active" href="users.html">Print User Badges</a></li>
+                    <!--<li class="nav-item" role="presentation"><a class="nav-link" href="groups.html">Print Group Badges</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="template.html">Edit Template</a></li>-->
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="page landing-page">
+        <section class="clean-block about-us">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">Print User Badge With Clever</h2>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-8">
+						<form>
+							<div class="form-group row">
+                                <label class="col-4">Search Users</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="search" id="searchusername">
+                                </div>
+							</div>
+                        </form>
+						<form>
+                            <div class="form-group row">
+                                <label class="col-4">First Name</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" id="firstnamefield" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-4">Last Name</label>
+                                    <div class="col-8"><input class="form-control" type="text" id="lastnamefield" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-4">Title</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" id="titlefield">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-4">ID Number</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" id="idfield">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-4">Badge ID</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" id="badgeidfield">
+                                </div>
+                            </div>
+                            <div><p><br><br></p></div>
+                            <div class="form-group row">
+                                <div class="col-4">
+                                    <button class="btn btn-success btn-block" type="button" onclick="updateInfo();" id="updateInfoBtn" disabled>Update Information</button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-primary btn-block" type="button" onclick="openModal();" id="updatePhotoBtn" disabled>Replace Photo</button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-secondary btn-block" id="printBTN" type="button" disabled>Print Badge</button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    <div class="col-1">&nbsp;</div>
+                    <div class="col-3"><iframe id="pdfBadge" name="pdfBadge" style="width: 100%; height: 100%;"></iframe>
+
+</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+     <!-- The Modal -->
+    <div class="modal fade" id="cameraModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg" style="width: 700px;">
+        <div class="modal-content">
+        
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">New Photo</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <div id="camera" >&nbsp;</div>
+                        </div>
+                        <div class="col-6 text-right">
+                            <div id="photo">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="snap" onclick="take_snapshot();">Take Photo</button>
+                <button type="button" class="btn btn-success" id="savePhotoBtn" onclick="save_photo();" disabled>Save Photo</button>
+            </div>
+              
+        </div>
+        </div>
+    </div>
+
+
+
+    <footer class="page-footer dark">
+        <div class="footer-copyright">
+            <p>© 2021 Copyright FikesMedia LLC</p>
+        </div>
+    </footer>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="assets/js/smoothproducts.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/jquery.autocomplete.js"></script>
+    <script src="assets/js/JsBarcode.all.min.js"></script>
+    <script src="assets/js/pdf-lib.js"></script>
+    <script src="assets/js/createUserCleverBadge.js"></script>
+    <script src="assets/js/usersClever.js"></script>
+    <script src="assets/js/webcam.js"></script>
+
+<script>
+    var win = nw.Window.get();
+    win.maximize();
+</script>
+
+</body>
+
+</html>

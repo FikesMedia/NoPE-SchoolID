@@ -1,0 +1,3 @@
+# Ignore Node_Modules
+/node_modules
+sessionStore.db

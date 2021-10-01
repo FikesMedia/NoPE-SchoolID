@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="FikesMedia LLC">
+
+		<title>Node.js Powershell Application</title>
+
+
+		<!-- Bootstrap core CSS -->
+		<link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this template -->
+		<link href="/assets/css/starter-template.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+			<a class="navbar-brand" href="#">Product Name</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Link</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Authentication Examples</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown01">
+							<a class="dropdown-item" href="examples/staticpassword.html">Static Password</a>
+							<a class="dropdown-item" href="examples/jsonuserdatabase.html">JSON User Database</a>
+							<a class="dropdown-item" href="examples/activedirectory.html">Active Directory</a>
+						</div>
+					</li>
+				</ul>
+				<form class="form-inline my-2 my-lg-0">
+					<input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+					<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+				</form>
+			</div>
+		</nav>
+
+		<main role="main" class="container">
+
+			<div class="container-template">
+				<h1>Error 404 Page Not Found</h1>
+				<p class="lead">
+					<br>
+					<img src="data:image/png;base64,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
+					waAAAAAElFTkSuQmCC">
+					<br><br> <a href = "/">Go Home</a>
+				</p>
+			</div>
+
+		</main><!-- /.container -->
+		
+		<script src="/assets/js/jquery-3.5.1.slim.min.js"></script>
+		<script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+		
+	</body>
+</html>

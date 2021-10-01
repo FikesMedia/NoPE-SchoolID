@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+	<head>
+    <title>School ID</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/uikit.min.css" />
+    <script src="assets/js/uikit.min.js"></script>
+    <script src="assets/js/uikit-icons.min.js"></script>
+</head>
+<body>
+    
+    <nav class="uk-navbar-container" uk-navbar>
+        <a class="uk-navbar-item uk-logo" href="#"><!--<img src="assets/img/SchoolID-Logo.svg" height="40px" width="150px">--> School ID </a>
+        <div class="uk-navbar-left">
+    
+            <ul class="uk-navbar-nav">
+                <li class="uk-active">
+                    <a href="/index.html">
+                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: copy"></span>
+                        User Badges
+                    </a>
+                </li>
+                <li class="uk-active">
+                    <a href="/devices.html">
+                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: copy"></span>
+                        Clever Badges
+                    </a>
+                </li>
+                <li class="uk-active">
+                    <a href="/clients.html">
+                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: file"></span>
+                        One Off Badge
+                    </a>
+                </li>
+            </ul>
+    
+        </div>
+    
+        <div class="uk-navbar-right"> 
+            <ul class="uk-navbar-nav">
+                <li>
+                    <a href="#">
+                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: settings"></span>
+                        Settings
+                    </a>
+                </li>   
+                <li>
+                    <a href="#">
+                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: user"></span>
+                        Account
+                    </a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li>
+                                <a href="#">
+                                <span class="uk-icon uk-margin-small-right" uk-icon="icon: user"></span>
+                                Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                <span class="uk-icon uk-margin-small-right" uk-icon="icon: sign-out"></span>
+                                Sign Out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>        
+    </nav>
+    
+    <div class="uk-container uk-container-expand uk-padding" uk-height-viewport="expand: true">
+      <div class="uk-text-left" uk-grid>
+        <div class="uk-width-medium">
+            <div class="uk-card uk-card-default uk-card-body">
+                <h3>Preview</h3>
+                <iframe id="pdfBadge" name="pdfBadge" style="width: 100%; height: 100%;"></iframe>
+                <p>
+                  <a class="uk-button uk-button-primary uk-button-small uk-width-1-1">Print</a>
+                </p>
+            </div>
+
+        </div>
+        <div class="uk-width-expand">
+            <div class="uk-card uk-card-default uk-card-body">
+              <form >
+                <fieldset class="uk-fieldset">
+            
+                    <legend class="uk-legend">Print User Badge</legend>
+                    <!-- Search -->
+                    <div class="uk-margin">
+                      <div class="uk-inline uk-width-1-1">
+                        <span class="uk-form-icon" uk-icon="icon: user"></span>
+                        <input class="uk-input" type="search" id="searchusername" placeholder="Search">
+                      </div>                        
+                    </div>
+                    <!-- First Name-->
+                    <div class="uk-margin-small">
+                      <label class="uk-form-label" for="form-stacked-text">First Name</label>
+                      <div class="uk-form-controls">
+                        <input class="uk-input" type="text" id="firstnamefield" disabled>
+                      </div>
+                    </div>
+                    <!-- Last Name-->
+                    <div class="uk-margin-small">
+                      <label class="uk-form-label" for="form-stacked-text">Last Name</label>
+                      <div class="uk-form-controls">
+                        <input class="uk-input" type="text" id="lastnamefield" disabled>
+                      </div>
+                    </div>
+                    <!-- Title-->
+                    <div class="uk-margin-small">
+                      <label class="uk-form-label" for="form-stacked-text">Title</label>
+                      <div class="uk-form-controls">
+                        <input class="uk-input" type="text" id="titlefield" >
+                      </div>
+                    </div>
+                    <!-- Student/Employee ID -->
+                    <div class="uk-margin-small">
+                      <label class="uk-form-label" for="form-stacked-text">Student / Employee ID</label>
+                      <div class="uk-form-controls">
+                        <input class="uk-input" type="text" id="idfield" >
+                      </div>
+                    </div>
+                    <!-- Badge ID -->
+                    <div class="uk-margin-small">
+                      <label class="uk-form-label" for="form-stacked-text">Badge ID</label>
+                      <div class="uk-form-controls">
+                        <input class="uk-input" type="text" id="badgeidfield" >
+                      </div>
+                    </div>
+                    <!-- Controls -->
+                    <div class="uk-button-group uk-margin-top uk-width-expand">
+                      <a class="uk-button uk-button-primary uk-width-1-2">Update Info</a>
+                      <a class="uk-button uk-button-danger uk-width-1-2" href="#replacePhoto" uk-toggle>Replace Photo</a>
+                    </div>
+                </fieldset>
+              </form>
+            </div>
+        </div>
+    </div>
+
+  </div>
+  
+
+  
+  <!-- FOOTER -->
+  <div class="uk-container uk-background-secondary uk-width-1-1 uk-text-center">
+    <p>School ID &copy; Copyright 2022 FikesMedia</p>
+  </div>
+  
+  
+  <!-- Camera Modal -->
+  <div id="replacePhoto" class="uk-flex-top" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <p>Put Image Stuff HERE</p>
+        <p>
+          <!-- Controls -->
+          <div class="uk-button-group uk-margin-top uk-width-expand">
+            <button class="uk-button uk-button-primary uk-width-1-2">Save Photo</button>
+            <button class="uk-button uk-button-primary uk-width-1-2">Retake</button>
+          </div>
+        </p>
+    </div>
+  </div>
+
+</body>
