@@ -13,6 +13,7 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const shell = require('node-powershell');
 const { Console } = require('console');
+const { json } = require('body-parser');
 
 // Configuration
 const configFile = fs.readFileSync(process.cwd()+"\\config.json");
@@ -157,7 +158,7 @@ app.post('/authenticate', function(req, res) {
 app.get('/ps1/get/:script', function(req, res) {
     console.log("GET " + req.params);
     const script = req.params.script;
-	const psparams = req.query.JSON;
+	const psparams = JSON.stringify(req.body);
 	
 	let ps1 = new shell({
 		executionPolicy: 'Bypass',
@@ -188,10 +189,8 @@ app.post('/ps1/post/:script', function(req, res) {
 	//if (validateSessionInformation(req) == false){
 	//	return "Not Authenticated";
 	//}
-	console.log("POST " + req.params);
-
-    const script = req.params.script;
-	const psparams = req.body;//JSON.stringify(req.body);
+	const script = req.params.script;
+	const psparams = JSON.stringify(req.body);
 	
 	let ps1 = new shell({
 		executionPolicy: 'Bypass',

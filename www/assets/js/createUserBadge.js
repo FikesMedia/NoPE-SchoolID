@@ -1,6 +1,6 @@
 
 async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,BGColor,TXTColor) {
-	const fs = require('fs'); 
+	//const fs = require('fs'); 
 	var companyText = company;
 	var firstNameText = firstName;
 	var lastNameText = lastName;
@@ -34,15 +34,15 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 
 	//Badge Image
 	//Check for userphoto and assign default if none.
-	const defaultJPG = process.cwd()+'\\www\\assets\\photos\\nophoto.jpg';
-	var checkPath = process.cwd()+'\\www\\assets\\photos\\'+id+'.jpg';
-	if (fs.existsSync(checkPath)) { 
-		var jpgUrl = checkPath; 
-	} else {
+	const defaultJPG = "./assets/www/photos/000000.jpg"; //process.cwd()+'\\www\\assets\\photos\\nophoto.jpg';
+	var checkPath = "./assets/www/photos/000000.jpg"; //process.cwd()+'\\www\\assets\\photos\\'+id+'.jpg';
+	//if (fs.existsSync(checkPath)) { 
+	//	var jpgUrl = checkPath; 
+	//} else {
 		var jpgUrl = defaultJPG;
-	}
+	//}
 	
-	var bitmap = fs.readFileSync(jpgUrl);
+	var bitmap = jpgUrl; //fs.readFileSync(jpgUrl);
 	var jpgImgBase64 = Buffer(bitmap).toString('base64');
 	const jpgImageBytes = await jpgImgBase64;
 	const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)

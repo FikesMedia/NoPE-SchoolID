@@ -57,60 +57,100 @@ $.getJSON( "/ps1/get/ad2xml.ps1", function( output ) {
 function GetUserInformation(Username) {
 
 
-	var data = {
-		searchUsername: Username
+
+	$.fn.serializeObject = function() {
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name] !== undefined) {
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
 	};
+
+	var formData = JSON.stringify($("#searchForm").serializeObject());
+	console.log(formData)
+
 	$.ajax({
 		url: "ps1/post/userinfo.ps1",
-		data: JSON.stringify(data),
+		data: formData,
 		type: "post",
-		headers: {
-			"content-type": "text/plain;charset=UTF-8"
-		},
+		contentType: "application/json",
 		beforeSend: function (){
-			console.log("Sending ..." + JSON.stringify(data));
+			//
 		},
 		error: function() {
 			console.log("Error");
 		},
+
+		//Create the Badge
 		success: function (data){
 			console.log(data);
+			//Load Defaults and build badge
+			$.getJSON("./defaults.json", function(defaults){
+			
+				var userJSON = JSON.parse(data);
+				
+				if (!userJSON.company) {
+					var company = defaults.Company;
+				} else {
+					var company = userJSON.company.toString();
+				}
+				if (!userJSON.givenname) {
+					var firstName = defaults.FirstName;
+				} else {
+					var firstName = userJSON.givenname.toString();
+				}
+				if (!userJSON.surname) {
+					var lastName = defaults.LastName;
+				} else {
+					var lastName = userJSON.surname.toString();
+				}
+				if (!userJSON.title) {
+					var title = defaults.Title;
+				} else {
+					var title = userJSON.title.toString();
+				}
+				if (!userJSON.employeeid) {
+					var empID = defaults.EmpID;
+				} else {
+					var empID = userJSON.employeeid.toString();
+				}
+				if (!userJSON.pager){
+					var badgeID = defaults.BadgeID;
+				} else {
+					var badgeID = userJSON.pager.toString();
+				}
+
+				document.getElementById("firstnamefield").value = firstName;
+				document.getElementById("lastnamefield").value = lastName;
+				document.getElementById("titlefield").value = title;
+				document.getElementById("idfield").value = empID;
+				document.getElementById("badgeidfield").value = badgeID;
+
+				//Draw PDF
+				createPdf(company,firstName,lastName,title,empID,badgeID,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+
+				document.getElementById('updateInfoBtn').removeAttribute("disabled");
+				document.getElementById('updatePhotoBtn').removeAttribute("disabled");
+				document.getElementById('printBtn').removeAttribute("disabled");
+
+
+			});
+
 		}
 	});
 
 }
 
 /*
-        
-        var formData = JSON.stringify('{"searchUsername": "'+ Username +'"}');
 
-		console.log("THIS FORM " + formData);
-
-		$.ajax({
-            url : "ps1/post/userinfo.ps1",
-            type: "POST",
-            data : formData,
-            //contentType: "application/json",
-            success: function(data, textStatus, jqXHR)
-            {
-				console.log("POST MADE")
-					var debugMode = 1;
-                //Output if Debig ON
-                if (debugMode == 1) { console.log(data); }
-                try { 
-                    var parsed = JSON.parse(data);
-                    
-                } catch(error) {
-                    console.log(error + " " + data);
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                //document.getElementById("loginMessage").innerHTML = "Something went wrong.";
-                console.log(errorThrown);
-            }
-        });
-}
 
 /*
 function GetUserInformation(Username) {
