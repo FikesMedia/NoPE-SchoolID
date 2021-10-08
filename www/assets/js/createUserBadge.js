@@ -1,3 +1,13 @@
+function dataURItoBlob(dataURI) {
+	const byteString = window.atob(dataURI);
+	const arrayBuffer = new ArrayBuffer(byteString.length);
+	const int8Array = new Uint8Array(arrayBuffer);
+	for (let i = 0; i < byteString.length; i++) {
+	  int8Array[i] = byteString.charCodeAt(i);
+	}
+	const blob = new Blob([int8Array], { type: 'application/pdf'});
+	return blob;
+}
 
 async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,BGColor,TXTColor) {
 	//const fs = require('fs'); 
@@ -34,8 +44,8 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 
 	//Badge Image
 	//Check for userphoto and assign default if none.
-	const defaultJPG = "./assets/www/photos/000000.jpg"; //process.cwd()+'\\www\\assets\\photos\\nophoto.jpg';
-	var checkPath = "./assets/www/photos/000000.jpg"; //process.cwd()+'\\www\\assets\\photos\\'+id+'.jpg';
+	const defaultJPG = 'assets/photos/000000.jpg'; //process.cwd()+'\\www\\assets\\photos\\nophoto.jpg';
+	var checkPath = "assets/photos/000000.jpg"; //process.cwd()+'\\www\\assets\\photos\\'+id+'.jpg';
 	//if (fs.existsSync(checkPath)) { 
 	//	var jpgUrl = checkPath; 
 	//} else {
@@ -43,8 +53,9 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 	//}
 	
 	var bitmap = jpgUrl; //fs.readFileSync(jpgUrl);
-	var jpgImgBase64 = Buffer(bitmap).toString('base64');
-	const jpgImageBytes = await jpgImgBase64;
+	//var jpgImgBase64 = Buffer(bitmap).toString('base64');
+	//const jpgImageBytes = await jpgImgBase64;
+	const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
 	const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
 	const jpgDims = jpgImage.scale(1)
 	const ImgW = page.getWidth()-page.getWidth()*.33;
@@ -118,7 +129,6 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 	}
 	//Barcode IMG
 	var jpgBarcodeBase64 = textToBase64Barcode(idText)
-	console.log(jpgBarcodeBase64);
 	const jpgBarcodeBytes = await jpgBarcodeBase64;
 	const jpgBarcode = await pdfDoc.embedPng(jpgBarcodeBytes)
 	const jpgBarcodeDims = jpgImage.scale(1)
@@ -131,6 +141,13 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 	height: 95//jpgBarcodeDims.height,
 	})
 
-	const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-	document.getElementById(elementID).src = pdfDataUri;
+
+
+	const pdfDataUri = await pdfDoc.saveAsBase64();
+ 
+	var pdfBlob = dataURItoBlob(pdfDataUri);
+	var newSrc = window.URL.createObjectURL(pdfBlob);
+	document.getElementById(elementID).src = newSrc;
+
+
 }

@@ -1,234 +1,161 @@
-//Setup Page
-$(document).ready(function() { 
+$(document).ready(function() {
+
+	//Gets Information from Selected User
+	function GetUserInformation(Username) {
+
+		$.fn.serializeObject = function() {
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function() {
+				if (o[this.name] !== undefined) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push(this.value || '');
+				} else {
+					o[this.name] = this.value || '';
+				}
+			});
+			return o;
+		};
+	
+		var formData = JSON.stringify($("#searchForm").serializeObject());
+	
+		$.ajax({
+			url: "ps1/post/userinfo.ps1",
+			data: formData,
+			type: "post",
+			contentType: "application/json",
+			beforeSend: function (){
+				//
+			},
+			error: function() {
+				console.log("Error");
+			},
+	
+			//Create the Badge
+			success: function (data){
+	
+				//Load Defaults and build badge
+				$.getJSON("./defaults.json", function(defaults){
+				
+					var userJSON = JSON.parse(data);
+					
+					if (!userJSON.company) {
+						var company = defaults.Company;
+					} else {
+						var company = userJSON.company.toString();
+					}
+					if (!userJSON.givenname) {
+						var firstName = defaults.FirstName;
+					} else {
+						var firstName = userJSON.givenname.toString();
+					}
+					if (!userJSON.surname) {
+						var lastName = defaults.LastName;
+					} else {
+						var lastName = userJSON.surname.toString();
+					}
+					if (!userJSON.title) {
+						var title = defaults.Title;
+					} else {
+						var title = userJSON.title.toString();
+					}
+					if (!userJSON.employeeid) {
+						var empID = defaults.EmpID;
+					} else {
+						var empID = userJSON.employeeid.toString();
+					}
+					if (!userJSON.pager){
+						var badgeID = defaults.BadgeID;
+					} else {
+						var badgeID = userJSON.pager.toString();
+					}
+	
+					document.getElementById("firstnamefield").value = firstName;
+					document.getElementById("lastnamefield").value = lastName;
+					document.getElementById("titlefield").value = title;
+					document.getElementById("idfield").value = empID;
+					document.getElementById("badgeidfield").value = badgeID;
+	
+					//Draw PDF
+					createPdf(company,firstName,lastName,title,empID,badgeID,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+
+	
+					document.getElementById('updateInfoBtn').removeAttribute("disabled");
+					document.getElementById('updatePhotoBtn').removeAttribute("disabled");
+					document.getElementById('printBtn').removeAttribute("disabled");
+	
+	
+				});
+	
+			}
+		});
+	}
+
+	document.getElementById('updateInfoBtn').setAttribute("disabled", "");
+	document.getElementById('updatePhotoBtn').setAttribute("disabled", "");
+	document.getElementById('printBtn').setAttribute("disabled", "");
+	
+
+
+	//GET JSON Database
+	$.getJSON( "/ps1/get/ad2xml.ps1", function( output ) {
+		var UserDB = output; //JSON.parse(output);
+		UIkit.modal("#loadingUsers").hide();
+		$("#searchusername").easyAutocomplete(
+			{
+				data: UserDB,
+				getValue: "SamAccountName",
+				template: {
+					type: "custom",
+					method: function(value, item){
+						return item.EmployeeID + " - " + item.Name;
+					}
+				},
+				requestDelay: 100,
+				list: {
+					maxNumberOfElements: 15,
+					onLoadEvent: function(){
+						document.getElementById('updateInfoBtn').setAttribute("disabled", "");
+						document.getElementById('updatePhotoBtn').setAttribute("disabled", "");
+						document.getElementById('printBtn').setAttribute("disabled", "");
+					},
+					onClickEvent: function() {
+						//SubmitSearchForm();
+						var UserSubmit = document.getElementById("searchusername").value;
+						GetUserInformation(UserSubmit);
+					},
+					match: {
+						enabled: true
+					}
+				}
+			}
+		);
+	})
+	.catch(err => {
+		console.log(err);
+	});
+
+
+
+
+	console.log("All Loaded")
+
 	//Prevent form Submission
 	$("form").submit(function(e){
 		e.preventDefault();
 	});
+
 	UIkit.modal("#loadingUsers").show();
-});
 
-//GET JSON Database
-$.getJSON( "/ps1/get/ad2xml.ps1", function( output ) {
-	console.log("Creating User Database");
-	console.log(output);
-	var UserDB = output; //JSON.parse(output);
-	UIkit.modal("#loadingUsers").hide();
-	$("#searchusername").easyAutocomplete(
-		{
-			data: UserDB,
-			getValue: "SamAccountName",
-			template: {
-				type: "custom",
-				method: function(value, item){
-					return item.EmployeeID + " - " + item.Name;
-				}
-			},
-			requestDelay: 100,
-			list: {
-				maxNumberOfElements: 15,
-				onLoadEvent: function(){
-					document.getElementById('updateInfoBtn').setAttribute("disabled", "");
-					document.getElementById('updatePhotoBtn').setAttribute("disabled", "");
-					document.getElementById('printBtn').setAttribute("disabled", "");
-					
-
-				},
-				onClickEvent: function() {
-					//SubmitSearchForm();
-					console.log("Submitting");
-					var UserSubmit = document.getElementById("searchusername").value;
-					console.log(UserSubmit);
-					GetUserInformation(UserSubmit);
-				},
-				match: {
-					enabled: true
-				}
-			}
-		}
-	);
-	//document.getElementById("overlay").style.display = "none";
-})
-.catch(err => {
-	console.log("Failed Creating DB");
-  console.log(err);
-  ps1.dispose();
-});
-
-function GetUserInformation(Username) {
-
-
-
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [o[this.name]];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
-
-	var formData = JSON.stringify($("#searchForm").serializeObject());
-	console.log(formData)
-
-	$.ajax({
-		url: "ps1/post/userinfo.ps1",
-		data: formData,
-		type: "post",
-		contentType: "application/json",
-		beforeSend: function (){
-			//
-		},
-		error: function() {
-			console.log("Error");
-		},
-
-		//Create the Badge
-		success: function (data){
-			console.log(data);
-			//Load Defaults and build badge
-			$.getJSON("./defaults.json", function(defaults){
-			
-				var userJSON = JSON.parse(data);
-				
-				if (!userJSON.company) {
-					var company = defaults.Company;
-				} else {
-					var company = userJSON.company.toString();
-				}
-				if (!userJSON.givenname) {
-					var firstName = defaults.FirstName;
-				} else {
-					var firstName = userJSON.givenname.toString();
-				}
-				if (!userJSON.surname) {
-					var lastName = defaults.LastName;
-				} else {
-					var lastName = userJSON.surname.toString();
-				}
-				if (!userJSON.title) {
-					var title = defaults.Title;
-				} else {
-					var title = userJSON.title.toString();
-				}
-				if (!userJSON.employeeid) {
-					var empID = defaults.EmpID;
-				} else {
-					var empID = userJSON.employeeid.toString();
-				}
-				if (!userJSON.pager){
-					var badgeID = defaults.BadgeID;
-				} else {
-					var badgeID = userJSON.pager.toString();
-				}
-
-				document.getElementById("firstnamefield").value = firstName;
-				document.getElementById("lastnamefield").value = lastName;
-				document.getElementById("titlefield").value = title;
-				document.getElementById("idfield").value = empID;
-				document.getElementById("badgeidfield").value = badgeID;
-
-				//Draw PDF
-				createPdf(company,firstName,lastName,title,empID,badgeID,"pdfBadge",defaults.BGColor,defaults.TXTColor);
-
-				document.getElementById('updateInfoBtn').removeAttribute("disabled");
-				document.getElementById('updatePhotoBtn').removeAttribute("disabled");
-				document.getElementById('printBtn').removeAttribute("disabled");
-
-
-			});
-
-		}
+	$("#printBtn").click(function(){
+		var PDF = document.getElementById("pdfBadge");
+      	PDF.focus();
+      	PDF.contentWindow.print();
 	});
-
-}
 
 /*
-
-
-/*
-function GetUserInformation(Username) {
-	
-	let ps = new shell({
-		executionPolicy: 'Bypass',
-		noProfile: true
-	});
-	//Default Settings
-	const fs = require('fs'); 
-	const defaultsFile = fs.readFileSync(process.cwd()+'\\www\\defaults.json');
-	var defaults = JSON.parse(defaultsFile);
-
-	ps.addCommand(process.cwd()+'\\www\\assets\\ps1\\userinfo.ps1 -Username ' + Username )
-	ps.invoke()
-	.then(output => {
-	  console.log(output);
-		var userJSON = JSON.parse(output);
-		if (!userJSON.company) {
-			var company = defaults.Company;
-		} else {
-			var company = userJSON.company.toString();
-		}
-		if (!userJSON.givenname) {
-			var firstName = defaults.FirstName;
-		} else {
-			var firstName = userJSON.givenname.toString();
-		}
-		if (!userJSON.surname) {
-			var lastName = defaults.LastName;
-		} else {
-			var lastName = userJSON.surname.toString();
-		}
-		if (!userJSON.title) {
-			var title = defaults.Title;
-		} else {
-			var title = userJSON.title.toString();
-		}
-		if (!userJSON.employeeid) {
-			var empID = defaults.EmpID;
-		} else {
-			var empID = userJSON.employeeid.toString();
-		}
-		if (!userJSON.pager){
-			var badgeID = defaults.BadgeID;
-		} else {
-			var badgeID = userJSON.pager.toString();
-		}
-		
-		document.getElementById("firstnamefield").value = firstName;
-		document.getElementById("lastnamefield").value = lastName;
-		document.getElementById("titlefield").value = title;
-		document.getElementById("idfield").value = empID;
-		document.getElementById("badgeidfield").value = badgeID;	
-		  
-		//Draw PDF
-		createPdf(company,firstName,lastName,title,empID,badgeID,"pdfBadge",defaults.BGColor,defaults.TXTColor);
-
-		document.getElementById('updateInfoBtn').removeAttribute("disabled");
-		document.getElementById('updatePhotoBtn').removeAttribute("disabled");
-		document.getElementById('printBTN').removeAttribute("disabled");
-		
-	})
-	.catch(err => {
-	  console.log(err);
-	  ps.dispose();
-	});
-}
-*/
-
-
-$(document).ready(function() {
-	$("#printBTN").click(function(){
-		frames["pdfBadge"].focus();
-        frames["pdfBadge"].print();
-	});
-});
-
 $('#cameraModal').on('hidden.bs.modal', function (e) {
 	Webcam.reset( '#camera' );
 	document.getElementById('savePhotoBtn').setAttribute("disabled", "");
@@ -323,3 +250,7 @@ function updateInfo(){
 		ps1.dispose();
 		});
 }
+*/
+
+
+});
