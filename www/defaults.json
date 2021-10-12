@@ -3,6 +3,7 @@
     "Title" : "Student",
     "EmpID" : "000000",
     "BadgeID" : "000000",
+    "BadgePhoto" : "000000.jpg",
     "FirstName" : "John",
     "LastName" : "Doe",
     "BGColor" : "EDFF00",

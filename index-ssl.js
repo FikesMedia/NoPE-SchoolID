@@ -61,13 +61,13 @@ app.post('/ps1/auth/:script', function(req, res) {
 	});
 });
 
+//
 // Powershell GET Processor
+//
 app.get('/ps1/get/:script', function(req, res) {
-	console.log(req.params);
-	// Calling Powershell Script from Param
-	const script = req.params.script;
-	// Getting JSON Data from GET
-	const psparams = req.query.JSON;
+    console.log("GET " + req.params);
+    const script = req.params.script;
+	const psparams = JSON.stringify(req.body);
 	
 	let ps1 = new shell({
 		executionPolicy: 'Bypass',
@@ -86,13 +86,19 @@ app.get('/ps1/get/:script', function(req, res) {
 		ps1.dispose();
 	});
 });
+//
+// END Powershell GET Processor
+//
 
+
+//
 // Powershell POST Processor
+//
 app.post('/ps1/post/:script', function(req, res) {
-	console.log(req.params);
-	// Calling Powershell Script from Param
+	//if (validateSessionInformation(req) == false){
+	//	return "Not Authenticated";
+	//}
 	const script = req.params.script;
-	// Getting JSON Data from POST
 	const psparams = JSON.stringify(req.body);
 	
 	let ps1 = new shell({
@@ -112,6 +118,39 @@ app.post('/ps1/post/:script', function(req, res) {
 		ps1.dispose();
 	});
 });
+//
+// END Powershell POST Processor
+//
+
+
+//
+// API Helpers
+//
+app.get('/api/:APICall', function(req, res) {
+    const Call = req.params.APICall;
+	switch(Call) {
+		//
+		// Validate Session Login
+		case 'validate':
+			if(!req.session.Username) {
+				res.send({ "SessionState": "Invalid" });
+			} else {
+				res.send({ "SessionState": "Valid" });
+			}
+			break;
+		//
+		// Default Login Redirected Page
+		case 'default':
+			res.redirect(config.AuthenticatedRedirectPage);
+			break;
+		default:
+			res.send({ "Error": "Improper use of API" });
+			break;
+	}
+});
+//
+// API Helpers
+//
 
 
 

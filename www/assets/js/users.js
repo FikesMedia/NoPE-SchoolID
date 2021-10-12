@@ -20,6 +20,7 @@ $(document).ready(function() {
 		};
 	
 		var formData = JSON.stringify($("#searchForm").serializeObject());
+		console.log(formData);
 	
 		$.ajax({
 			url: "ps1/post/userinfo.ps1",
@@ -41,51 +42,29 @@ $(document).ready(function() {
 				
 					var userJSON = JSON.parse(data);
 					
-					if (!userJSON.company) {
-						var company = defaults.Company;
-					} else {
-						var company = userJSON.company.toString();
-					}
-					if (!userJSON.givenname) {
-						var firstName = defaults.FirstName;
-					} else {
-						var firstName = userJSON.givenname.toString();
-					}
-					if (!userJSON.surname) {
-						var lastName = defaults.LastName;
-					} else {
-						var lastName = userJSON.surname.toString();
-					}
-					if (!userJSON.title) {
-						var title = defaults.Title;
-					} else {
-						var title = userJSON.title.toString();
-					}
-					if (!userJSON.employeeid) {
-						var empID = defaults.EmpID;
-					} else {
-						var empID = userJSON.employeeid.toString();
-					}
-					if (!userJSON.pager){
-						var badgeID = defaults.BadgeID;
-					} else {
-						var badgeID = userJSON.pager.toString();
-					}
-	
+					//Set User Information
+					var company = userJSON.company.toString();
+					var firstName = userJSON.givenname.toString();
+					var lastName = userJSON.surname.toString();
+					var title = userJSON.title.toString();
+					var empID = userJSON.employeeid.toString();
+					var badgeID = userJSON.pager.toString();
+					var badgephoto = userJSON.badgephoto;
+
 					document.getElementById("firstnamefield").value = firstName;
 					document.getElementById("lastnamefield").value = lastName;
 					document.getElementById("titlefield").value = title;
 					document.getElementById("idfield").value = empID;
 					document.getElementById("badgeidfield").value = badgeID;
-	
-					//Draw PDF
-					createPdf(company,firstName,lastName,title,empID,badgeID,"pdfBadge",defaults.BGColor,defaults.TXTColor);
 
-	
+					//Draw PDF
+					createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+
+
 					document.getElementById('updateInfoBtn').removeAttribute("disabled");
 					document.getElementById('updatePhotoBtn').removeAttribute("disabled");
 					document.getElementById('printBtn').removeAttribute("disabled");
-	
+		
 	
 				});
 	
