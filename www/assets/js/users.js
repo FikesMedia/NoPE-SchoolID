@@ -1,3 +1,15 @@
+//Take Image
+function take_snapshot() {
+	// take snapshot and get image data
+	Webcam.snap( function(data_uri) {
+		// display results in page
+		document.getElementById('photo').innerHTML = '<img id="actualPhoto" src="'+data_uri+'"/>';
+		//Enable Use Button
+
+	} );
+}
+
+
 $(document).ready(function() {
 
 	//Gets Information from Selected User
@@ -132,6 +144,35 @@ $(document).ready(function() {
 		var PDF = document.getElementById("pdfBadge");
       	PDF.focus();
       	PDF.contentWindow.print();
+	});
+
+	UIkit.util.on(document, 'show', '#replacePhoto', function(){
+
+		Webcam.set({
+			// live preview size
+			width: 320,
+			height: 240,
+			
+			// device capture size
+			dest_width: 320,
+			dest_height: 240,
+			
+			// final cropped size
+			crop_width: 240,
+			crop_height: 240,
+			
+			// format and quality
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+	
+		Webcam.attach('#camera');
+		
+	});
+
+	UIkit.util.on(document, 'hide', '#replacePhoto', function(){
+		Webcam.reset( '#camera' );
+		document.getElementById('photo').innerHTML = '<img id="actualPhoto" src=""/>';
 	});
 
 /*

@@ -4,8 +4,8 @@
     <title>School ID</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="assets/css/uikit.min.css" />
-    <link rel="stylesheet" href="assets/css/autocomplete.min.css" />
+    <link rel="stylesheet" href="/assets/css/uikit.min.css" />
+    <link rel="stylesheet" href="/assets/css/autocomplete.min.css" />
 
 
     
@@ -16,26 +16,26 @@
         <a class="uk-navbar-item uk-logo" href="#"><!--<img src="assets/img/SchoolID-Logo.svg" height="40px" width="150px">--> School ID </a>
         <div class="uk-navbar-left">
     
-            <ul class="uk-navbar-nav">
-                <li class="uk-active">
-                    <a href="/index.html">
-                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: copy"></span>
-                        User Badges
-                    </a>
-                </li>
-                <li class="uk-active">
-                    <a href="/devices.html">
-                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: copy"></span>
-                        Clever Badges
-                    </a>
-                </li>
-                <li class="uk-active">
-                    <a href="/clients.html">
-                        <span class="uk-icon uk-margin-small-right" uk-icon="icon: file"></span>
-                        One Off Badge
-                    </a>
-                </li>
-            </ul>
+          <ul class="uk-navbar-nav">
+            <li class="uk-active">
+                <a href="/index.html">
+                    <span class="uk-icon uk-margin-small-right" uk-icon="icon: copy"></span>
+                    User Badges
+                </a>
+            </li>
+            <li class="uk-active">
+                <a href="/clever.html">
+                    <span class="uk-icon uk-margin-small-right" uk-icon="icon: copy"></span>
+                    Clever Badges
+                </a>
+            </li>
+            <li class="uk-active">
+                <a href="/oneoff.html">
+                    <span class="uk-icon uk-margin-small-right" uk-icon="icon: file"></span>
+                    One Off Badge
+                </a>
+            </li>
+        </ul>
     
         </div>
     
@@ -169,14 +169,17 @@
   <div id="replacePhoto" class="uk-flex-top" uk-modal>
     <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
         <button class="uk-modal-close-default" type="button" uk-close></button>
-        <p>Put Image Stuff HERE</p>
-        <p>
+        
+        <div class="uk-modal-body uk-padding-small">
+          <div class="uk-grid-small" uk-grid>
+            <div id="camera"></div>
+            <div id="photo"></div>
+        </div>
           <!-- Controls -->
           <div class="uk-button-group uk-margin-top uk-width-expand">
-            <button class="uk-button uk-button-primary uk-width-1-2">Save Photo</button>
-            <button class="uk-button uk-button-primary uk-width-1-2">Retake</button>
+            <button class="uk-button uk-button-secondary uk-width-1-2" onclick="take_snapshot();">Take Photo</button>
+            <button class="uk-button uk-button-primary uk-width-1-2" onclick="save_photo();">Use Photo</button>
           </div>
-        </p>
     </div>
   </div>
 
@@ -187,6 +190,7 @@
   <script src="assets/js/pdf-lib.js"></script>
   <script src="assets/js/JsBarcode.all.min.js"></script>
   <script src="assets/js/createUserBadge.js"></script>
+  <script src="assets/js/webcam.js"></script>
   <script src="assets/js/users.js"></script>
 
 </body>
