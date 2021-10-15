@@ -1,4 +1,6 @@
-//Take Image
+//
+// Camera Take Image
+//
 function take_snapshot() {
 	// take snapshot and get image data
 	Webcam.snap( function(data_uri) {
@@ -7,41 +9,180 @@ function take_snapshot() {
 		//Enable Use Button
 
 	} );
-}
+} // END Take Photo
 
-//Gets Information from Selected User
-function GenerateOneOffBadge() {
 
-	//Load Defaults and build badge
+//
+// Save Temporary Badge Photo
+//
+function use_snapshot() {
+
+	//document.getElementById("base64photo").value = document.getElementById("actualPhoto").src;
+	$("#base64photo").val() = $("#actualPhoto").attr(src);
+	//document.getElementById("employeeid").value = "_tmp-" + document.getElementById("idfield").value;
+	$("#employeeid").val() = $("#idfield").val();
+
+	//Close Camera
+	UIkit.modal("#replacePhoto").hide();
+
+	//Serialize VooDoo
+	$.fn.serializeObject = function() {
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name] !== undefined) {
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
+	};
+	
+	//Serial Form Data
+	var formData = JSON.stringify($("#photoData").serializeObject());
+
+	//Submit Photo for Saving
+	$.ajax({
+		url: "ps1/post/saveimage.ps1",
+		data: formData,
+		type: "post",
+		contentType: "application/json",
+		beforeSend: function (){
+		},
+		error: function() {
+			console.log("Error");
+		},
+		success: function (data){
+		}
+	});
+} // END Photo Save
+
+
+//
+// Deletes Temporary Badge Photo
+//
+function del_snapshot() {
+
+	//Serialize VooDoo
+	$.fn.serializeObject = function() {
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name] !== undefined) {
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
+	};
+	
+	//Serial Form Data
+	var formData = JSON.stringify($("#photoData").serializeObject());
+
+	//Request Photo Deletion
+	$.ajax({
+		url: "ps1/post/delimage.ps1",
+		data: formData,
+		type: "post",
+		contentType: "application/json",
+		beforeSend: function (){
+		},
+		error: function() {
+			console.log("Error");
+		},
+		success: function (data){
+		}
+	});
+
+} // END Photo Deletion
+
+
+//
+//Checks Data and submits OneOff Print
+//
+function checkDataAndPrint() {
+
+	//Load Defaults
 	$.getJSON("./defaults.json", function(defaults){
 
-		//Set User Information
-		var company = document.getElementById("companyfield").value;
-		var firstName = document.getElementById("firstnamefield").value;
-		var lastName = document.getElementById("lastnamefield").value;
-		var title = document.getElementById("titlefield").value;
-		var empID = document.getElementById("idfield").value;
-		//var badgeID = document.getElementById("idfield").value;
-		if(document.getElementById("idfield").value === '') {
-			document.getElementById("idfield").value = "000000";
-			var badgeID = document.getElementById("idfield").value;
+		//
+		//Check for Required Fields
+		//
+
+		// First Name
+		if ($("#firstnamefield").val() != null && $("#firstnamefield").val() != '') {  		
+			var firstName = $("#firstnamefield").val();
 		} else {
-			var badgeID = document.getElementById("idfield").value;
+			UIkit.modal("#messageBox").show();
+			return;
 		}
-		var badgephoto = "oneoff.jpg";
+		//Last Name
+		if ($("#lastnamefield").val() != null && $("#lastnamefield").val() != '') {  		
+			var lastName = $("#lastnamefield").val();
+		} else {
+			UIkit.modal("#messageBox").show();
+			return;
+		}
+		//Company Name
+		if ($("#companyfield").val() != null && $("#companyfield").val() != '') {  		
+			var company = $("#companyfield").val();
+		} else {
+			UIkit.modal("#messageBox").show();
+			return;
+		}
+		//Title Name
+		if ($("#titlefield").val() != null && $("#titlefield").val() != '') {  		
+			var title = $("#titlefield").val();
+		} else {
+			UIkit.modal("#messageBox").show();
+			return;
+		}
+		//Employee ID
+		if ($("#idfield").val() != null && $("#idfield").val() != '') {  		
+			var empID = $("#idfield").val();
+			var badgeID = empID;
+		} else {
+			UIkit.modal("#messageBox").show();
+			return;
+		}
+		//Set default photo if none taken
+		if ($("#base64photo").val() != null && $("#base64photo").val() != '') {  		
+			var delPhotoStatus = true;
+			var badgephoto = "_tmp-" + badgeID + ".jpg";
+		} else {
+			var delPhotoStatus = false;
+			var badgephoto = defaults.BadgePhoto;
+		}
 
 		//Draw PDF
 		createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+		
 		//Enable Print Button
 		document.getElementById('printBtn').removeAttribute("disabled");
 
+		//Cleanup Temp Photo
+		if (delPhotoStatus == true) {
+			del_snapshot();
+		}
+
 	});
 
+} // END Check Data and Print
 
-}
 
-
+//
+// Document Preparation
+//
 $(document).ready(function() {
+
 	//Disable Print Button until Data Available
 	document.getElementById('printBtn').setAttribute("disabled", "");
 
@@ -50,68 +191,51 @@ $(document).ready(function() {
 		e.preventDefault();
 	});
 
-	$("#generateIdBtn").click(function(){
-		GenerateOneOffBadge();
+	//Remove Spaces From Employee ID
+	$("#idfield").change(function(){
+		this.value = this.value.replace(/\s/g, "");
 	});
 
+	//Monitor Generate Button
+	$("#generateIdBtn").click(function(){
+		checkDataAndPrint();
+	});
+
+	//Monitor Print Button and Print
 	$("#printBtn").click(function(){
 		var PDF = document.getElementById("pdfBadge");
       	PDF.focus();
       	PDF.contentWindow.print();
 	});
 
+	//Build Camera on Modal Show
 	UIkit.util.on(document, 'show', '#replacePhoto', function(){
-
+		//Setup Camera Settings
 		Webcam.set({
 			// live preview size
 			width: 320,
-			height: 240,
-			
+			height: 240,			
 			// device capture size
 			dest_width: 320,
 			dest_height: 240,
-			
 			// final cropped size
 			crop_width: 240,
 			crop_height: 240,
-			
 			// format and quality
 			image_format: 'jpeg',
 			jpeg_quality: 90
 		});
-	
+		//Attach Camera to DIV
 		Webcam.attach('#camera');
-		
 	});
 
+	//Flush Camera on Modal Hide
 	UIkit.util.on(document, 'hide', '#replacePhoto', function(){
-		Webcam.reset( '#camera' );
+		Webcam.reset( '#camera');
 		document.getElementById('photo').innerHTML = '<img id="actualPhoto" src=""/>';
+
 	});
 
-/*
-	function save_photo() {
-	const fs = require('fs'); 
-	var username = document.getElementById('searchusername').value;
-	var imgSrc = document.getElementById('actualPhoto').src;
-	var base64Image = imgSrc.split(';base64,').pop();
-	//var fileName = process.cwd()+ '\\www\\photos\\' + document.getElementById("idfield").value + ".jpg";
-	var fileName = "./www/assets/photos/" + document.getElementById("idfield").value + ".jpg";
-	console.log(fileName);
-	//Overlay
-	document.getElementById("overlaytext").innerHTML="Saving Photo";
-	document.getElementById("overlay").style.display = "block";
-	fs.writeFile(fileName, base64Image, {encoding:'base64'}, function(err) {
-		console.log('File created');
-		document.getElementById("overlay").style.display = "none";
-		$("#cameraModal").modal("hide");
-	});
-}
-
-
-*/
-
-
-});
+}); // END Document Preparation
 
 

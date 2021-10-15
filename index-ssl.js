@@ -293,18 +293,6 @@ app.get('*',function (req, res) {
 //
 
 
-//
-// Start Server
-//
-app.listen(config.HTTPPort, function(error){ 
-	if(error) throw error 
-	console.log(config.ApplicationName + " Started on port " + config.HTTPPort);
-	console.log("http://"+os.hostname()+":"+config.HTTPPort);
-});
-//
-// END Start Server
-//
-
 
 //
 // Authentication Cookie and Session information
@@ -459,8 +447,9 @@ createSQLiteStore();
 // END Once Per Start Execution
 //
 
-
+//
 // Start Secure Server
+//
 https.createServer({
     key: fs.readFileSync(process.cwd()+config.PrivateKey),
     cert: fs.readFileSync(process.cwd()+config.Certificate),

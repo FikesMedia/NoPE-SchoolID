@@ -31,6 +31,7 @@ $(document).ready(function() {
 			return o;
 		};
 	
+		
 		var formData = JSON.stringify($("#searchForm").serializeObject());
 		console.log(formData);
 	
@@ -84,6 +85,7 @@ $(document).ready(function() {
 		});
 	}
 
+	
 	document.getElementById('updateInfoBtn').setAttribute("disabled", "");
 	document.getElementById('updatePhotoBtn').setAttribute("disabled", "");
 	document.getElementById('printBtn').setAttribute("disabled", "");
