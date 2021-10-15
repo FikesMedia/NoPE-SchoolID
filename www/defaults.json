@@ -6,6 +6,6 @@
     "BadgePhoto" : "000000.jpg",
     "FirstName" : "John",
     "LastName" : "Doe",
-    "BGColor" : "EDFF00",
+    "BGColor" : "#EDFF00",
 	"TXTColor":  "#002466"
 }
