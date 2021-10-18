@@ -9,7 +9,6 @@ try {
     $ThisLocation = Get-Location
     $Defaults = Get-Content ((Get-Item $ThisLocation).FullName + "\www\defaults.json") | ConvertFrom-Json
     
-    
     #Get User Information
     $searchUser = $Data.searchUsername
     $User = Get-ADUser -Identity $searchUser -Properties title,department,company,mail,pager,employeeid,givenname,surname
@@ -42,10 +41,22 @@ try {
        $UserPhoto = $Defaults.BadgePhoto
     }
 
+
+    #Check for clever and return path
+    $PhotoPath = (Get-Item $ThisLocation).FullName + "\www\assets\clever\" + $User.employeeid + ".png"
+    if(Test-Path -Path $PhotoPath -PathType Leaf){
+       $CleverQR = $User.employeeid + ".png"
+    } else {
+       $CleverQR = "NONE"
+    }
+
+
     $User | Add-Member -MemberType NoteProperty -Name badgephoto -Value $UserPhoto -Force
-    $User | Select-Object givenname,surname,title,department,company,mail,employeeid,pager,badgephoto | ConvertTo-Json
+    $User | Add-Member -MemberType NoteProperty -Name cleverqr -Value $CleverQR -Force
+    $User | Select-Object givenname,surname,title,department,company,mail,employeeid,pager,badgephoto,cleverqr | ConvertTo-Json
     
 
 } catch {
     $Data = "INVALID DATA SENT"
+    $Data
 } 

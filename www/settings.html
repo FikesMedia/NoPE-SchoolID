@@ -77,27 +77,24 @@
         <div class="uk-width-medium">
             <div class="uk-card uk-card-default uk-card-body">
                 <iframe id="pdfBadge" class="uk-width-1-1 uk-height-medium"></iframe>
-                <p>
-                  <button id="printBtn" class="uk-button uk-button-primary uk-button-small uk-width-1-1">Print</button>
-                </p>
             </div>
 
         </div>
         <div class="uk-width-expand">
             <div class="uk-card uk-card-default uk-card-body">
-         
-                <form name="infoForm">
+                <form name="settingsForm">
                   <fieldset class="uk-fieldset">
+                    <legend class="uk-legend">Default Data</legend>
                     <!-- First Name-->
                     <div class="uk-margin-small">
-                      <label class="uk-form-label" for="form-stacked-text">First Name</label>
+                      <label class="uk-form-label" for="form-stacked-text">Default First Name</label>
                       <div class="uk-form-controls">
                         <input class="uk-input" type="text" id="firstnamefield">
                       </div>
                     </div>
                     <!-- Last Name-->
                     <div class="uk-margin-small">
-                      <label class="uk-form-label" for="form-stacked-text">Last Name</label>
+                      <label class="uk-form-label" for="form-stacked-text">Default Last Name</label>
                       <div class="uk-form-controls">
                         <input class="uk-input" type="text" id="lastnamefield">
                       </div>
@@ -123,16 +120,54 @@
                         <input class="uk-input" type="text" id="idfield" >
                       </div>
                     </div>
-                  
-                    <!-- Controls -->
-                    <div class="uk-button-group uk-margin-top uk-width-expand">
-                      <button id="generateIdBtn" class="uk-button uk-button-primary uk-width-1-2">Generate Badge</button>
-                      <button id="updatePhotoBtn" class="uk-button uk-button-danger uk-width-1-2" href="#replacePhoto" uk-toggle>Replace Photo</button>
-                    </div>
                 </fieldset>
-              </form>
+
 
             </div>
+            <!-- Color Settings -->
+            <div class="uk-card uk-card-default uk-card-body uk-margin-top">
+
+                <fieldset class="uk-fieldset">
+                  <legend class="uk-legend">Style Settings</legend>
+                  <!-- Background Color -->
+                  <div class="uk-margin-small">
+                    <label class="uk-form-label" for="form-stacked-text">Background Color</label>
+                    <div class="uk-form-controls">
+                      <input class="uk-input" type="text" id="bgcolor" >
+                    </div>
+                  </div>
+                  <!-- Title Color -->
+                  <div class="uk-margin-small">
+                    <label class="uk-form-label" for="form-stacked-text">Title Color</label>
+                    <div class="uk-form-controls">
+                      <input class="uk-input" type="text" id="titlecolor" >
+                    </div>
+                  </div>
+                  <!-- Text Color -->
+                  <div class="uk-margin-small">
+                    <label class="uk-form-label" for="form-stacked-text">Text Color</label>
+                    <div class="uk-form-controls">
+                      <input class="uk-input" type="text" id="titlecolor" >
+                    </div>
+                  </div>
+                  <!-- Default Image -->
+                  <div class="uk-margin-small">
+                    <label class="uk-form-label" for="form-stacked-text">Default Image</label>
+                    <div class=" uk-margin-top uk-width-expand">
+                      <img id="defaultPhoto" data-src="" height="100" width="100" uk-img  href="#replacePhoto" uk-toggle>
+                    </div>
+                  </div>
+                  </fieldset>
+              </form>
+            </div>
+            <!-- Save Settings -->
+            <div class="uk-card uk-card-default uk-card-body uk-margin-top">
+              <!-- Controls -->
+              <div class="uk-button-group uk-margin-top uk-width-expand">
+                <button id="generateIdBtn" class="uk-button uk-button-primary uk-width-1-2">Save Settings</button>
+              </div>
+            </div>
+
         </div>
     </div>
 
@@ -160,14 +195,15 @@
         
         <div class="uk-modal-body uk-padding-small">
           <div class="uk-grid-small" uk-grid>
-            <div id="camera"></div>
+            <div><img id="defaultPhotoChange" data-src="" height="250" width="250" uk-img ></div>
             <div id="photo"></div>
           </div>
 
           <!-- Controls -->
           <div class="uk-button-group uk-margin-top uk-width-expand">
-            <button class="uk-button uk-button-secondary uk-width-1-2" onclick="take_snapshot();">Take Photo</button>
-            <button class="uk-button uk-button-primary uk-width-1-2" onclick="use_snapshot();">Use Photo</button>
+            <input type="file" onchange="previewFile()">
+            <button class="uk-button uk-button-secondary uk-width-1-2" onclick="take_snapshot();">Upload New Photo</button>
+            <button class="uk-button uk-button-primary uk-width-1-2" onclick="use_snapshot();">Save Photo</button>
           </div>
         </div>
       </div>
@@ -193,7 +229,9 @@
   <script src="assets/js/pdf-lib.js"></script>
   <script src="assets/js/JsBarcode.all.min.js"></script>
   <script src="assets/js/createUserBadge.js"></script>
-  <script src="assets/js/oneoff.js"></script>
+  <!-- <script src="assets/js/oneoff.js"></script> -->
+  <script src="assets/js/settings.js"></script>
+  <script src="assets/js/jscolor.js"></script>
   <script src="assets/js/webcam.js"></script>
 
 </body>

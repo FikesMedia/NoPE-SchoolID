@@ -190,6 +190,8 @@ function GetUserInformation(Username) {
 				var empID = userJSON.employeeid.toString();
 				var badgeID = userJSON.pager.toString();
 				var badgephoto = userJSON.badgephoto;
+				var cleverqr = userJSON.cleverqr;
+				console.log("Clever Photo is " + cleverqr)
 
 				document.getElementById("firstnamefield").value = firstName;
 				document.getElementById("lastnamefield").value = lastName;
@@ -197,13 +199,17 @@ function GetUserInformation(Username) {
 				document.getElementById("idfield").value = empID;
 				document.getElementById("badgeidfield").value = badgeID;
 
-				//Draw PDF
-				createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+				if (cleverqr != 'NONE') { 
+					//Draw PDF
+					createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,cleverqr,"pdfBadge",defaults.BGColor,defaults.TXTColor);
 
-				//Enable Buttons
-				document.getElementById('updateInfoBtn').removeAttribute("disabled");
-				document.getElementById('updatePhotoBtn').removeAttribute("disabled");
-				document.getElementById('printBtn').removeAttribute("disabled");
+					//Enable Buttons
+					document.getElementById('updateInfoBtn').removeAttribute("disabled");
+					document.getElementById('updatePhotoBtn').removeAttribute("disabled");
+					document.getElementById('printBtn').removeAttribute("disabled");
+				} else {
+					UIkit.modal("#messageBox").show();
+				}
 	
 
 			});

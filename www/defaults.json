@@ -7,5 +7,6 @@
     "FirstName" : "John",
     "LastName" : "Doe",
     "BGColor" : "#EDFF00",
-	"TXTColor":  "#002466"
+    "TitleColor" : "#002466",
+	"TXTColor":  "#FFFFFF"
 }

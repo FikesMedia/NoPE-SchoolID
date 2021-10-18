@@ -17,10 +17,9 @@ function take_snapshot() {
 //
 function use_snapshot() {
 
-	//document.getElementById("base64photo").value = document.getElementById("actualPhoto").src;
-	$("#base64photo").val() = $("#actualPhoto").attr(src);
-	//document.getElementById("employeeid").value = "_tmp-" + document.getElementById("idfield").value;
-	$("#employeeid").val() = $("#idfield").val();
+
+	$("#base64photo").val($("#actualPhoto").attr("src"));
+	$("#employeeid").val("_tmp-" + $("#idfield").val());
 
 	//Close Camera
 	UIkit.modal("#replacePhoto").hide();
@@ -86,6 +85,7 @@ function del_snapshot() {
 	
 	//Serial Form Data
 	var formData = JSON.stringify($("#photoData").serializeObject());
+
 
 	//Request Photo Deletion
 	$.ajax({
@@ -166,11 +166,12 @@ function checkDataAndPrint() {
 		createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TXTColor);
 		
 		//Enable Print Button
-		document.getElementById('printBtn').removeAttribute("disabled");
+		$("#printBtn").prop("disabled", false);
 
 		//Cleanup Temp Photo
 		if (delPhotoStatus == true) {
-			del_snapshot();
+			//Still Thinking of how to handle this.
+			//del_snapshot();
 		}
 
 	});
@@ -183,8 +184,9 @@ function checkDataAndPrint() {
 //
 $(document).ready(function() {
 
-	//Disable Print Button until Data Available
-	document.getElementById('printBtn').setAttribute("disabled", "");
+	//Disable Print and Photo Button until Data Available
+	$("#printBtn").prop("disabled", true);
+	$("#updatePhotoBtn").prop("disabled", true);
 
 	//Prevent form Submission
 	$("form").submit(function(e){
@@ -194,6 +196,15 @@ $(document).ready(function() {
 	//Remove Spaces From Employee ID
 	$("#idfield").change(function(){
 		this.value = this.value.replace(/\s/g, "");
+		if ($("#idfield").val() != null && $("#idfield").val() != '') {
+			$("#updatePhotoBtn").prop("disabled", false);
+		} else {
+			$("#updatePhotoBtn").prop("disabled", true);
+			//Clear Photo Submission Data
+			$("#base64photo").val() = "";
+			$("#employeeid").val() = "";
+		}
+
 	});
 
 	//Monitor Generate Button

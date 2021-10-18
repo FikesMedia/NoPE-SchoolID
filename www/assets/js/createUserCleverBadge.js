@@ -1,17 +1,25 @@
+// Conversion from Data URI to BLOB
+function dataURItoBlob(dataURI) {
+	const byteString = window.atob(dataURI);
+	const arrayBuffer = new ArrayBuffer(byteString.length);
+	const int8Array = new Uint8Array(arrayBuffer);
+	for (let i = 0; i < byteString.length; i++) {
+	  int8Array[i] = byteString.charCodeAt(i);
+	}
+	const blob = new Blob([int8Array], { type: 'application/pdf'});
+	return blob;
+}
 
-async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,BGColor,TXTColor) {
-	const fs = require('fs'); 
+async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,cleverqr,elementID,BGColor,TXTColor) {
 	var companyText = company;
 	var firstNameText = firstName;
 	var lastNameText = lastName;
 	var titleText = title;
 	var idText = id;
-	var badgeidText = badgeid
+	var badgeidText = badgeid;
+	var badgephoto = badgephoto;
 	
 	const pdfDoc = await PDFLib.PDFDocument.create();
-	
-	
-	
 	const page = pdfDoc.addPage([540, 840]);
 	
 	//Background Color
@@ -21,7 +29,6 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 		width: page.getWidth(),
 		height: page.getHeight(),
 		color: PDFLib.rgb(0, 0.14, 0.4),
-		
 		opacity: 1,
 	})
 
@@ -36,74 +43,70 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 	})
 
 	//Badge Image
-	//Check for userphoto and assign default if none.
-	const defaultJPG = process.cwd()+'\\www\\assets\\photos\\nophoto.jpg';
-	var checkPath = process.cwd()+'\\www\\assets\\photos\\'+id+'.jpg';
-	if (fs.existsSync(checkPath)) { 
-		var jpgUrl = checkPath; 
-	} else {
-		var jpgUrl = defaultJPG;
-	}
-	
-	var bitmap = fs.readFileSync(jpgUrl);
-	var jpgImgBase64 = Buffer(bitmap).toString('base64');
-	const jpgImageBytes = await jpgImgBase64;
-	const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
-	const jpgDims = jpgImage.scale(1)
-	const ImgW = page.getWidth()-page.getWidth()*.33;
-	const ImgH = page.getWidth()-page.getWidth()*.33;
+	var jpgUrl = 'assets/photos/' + badgephoto;
+	var jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
+	var jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
+	var ImgW = page.getWidth()-page.getWidth()*.33;
+	var ImgH = page.getWidth()-page.getWidth()*.33;
 
-	//Draw Image
-	//page.moveTo(300, 650);	
+	//Draw Image	
 	page.drawImage(jpgImage, {
-	x: page.getWidth() / 2 - ImgW/2,     //jpgDims.width / 2,
-	y: page.getHeight() / 2 - ImgH/2 + 15,    // - jpgDims.height / 2 ,
-	width: ImgW,       //jpgDims.width,
-	height: ImgH       //jpgDims.height,
+	x: page.getWidth() / 2 - ImgW/2,
+	y: page.getHeight() / 2 - ImgH/2 + 15,
+	width: ImgW,      
+	height: ImgH
 	})
 
+
 	//Set Font
-	const StandardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica)
-	const BoldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
+	var StandardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica)
+	var BoldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
+
 	
-	//Company Text
-	const companytextWidth = BoldFont.widthOfTextAtSize(companyText, 72);
-	//page.moveTo(75,700);
+	//Dynamic Company Size
+	var companyFontSize = 72;
+	var companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
+	//Reduce Till Fit
+	while (companytextWidth > page.getWidth() - 50){
+		companyFontSize = companyFontSize - 4;
+		companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
+	}
 	page.drawText(companyText, {
 		x: page.getWidth() / 2 - companytextWidth / 2,
 		y: 670,
-		size: 72,
+		size: companyFontSize,
 		color: PDFLib.rgb(0.93,1.00,0.00),
 		font: BoldFont
 	})
+	//END Dynamic Company Size
 
 
-
-	//Name Text
-	var nametextWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, 60);
-	if (nametextWidth > page.getWidth()) {
-		var fontSize = 44;
-		nametextWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, fontSize);
-	} else {
-		var fontSize = 60;
+	//Dynamic Name Size
+	var nameFontSize = 60;
+	var NameWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, nameFontSize);
+	//Reduce Size Till Fit
+	while (NameWidth > page.getWidth() - 50){
+		nameFontSize = nameFontSize - 4;
+		NameWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, nameFontSize);
 	}
 	page.drawText(firstNameText + " " + lastNameText,{ 
-		x: page.getWidth() / 2 - nametextWidth / 2,
+		x: page.getWidth() / 2 - NameWidth / 2,
 		y: 190,
-		size: fontSize,
+		size: nameFontSize,
 		color: PDFLib.rgb(1,1,1),
 		font: StandardFont
 	});
-	
-	//Title Text
-	var titletextWidth = BoldFont.widthOfTextAtSize(titleText, 72);
-	if (titletextWidth > page.getWidth()){
-		var titleFontSize = 54;
+	//End Dynamic Name Size
+
+
+	//Dynamic Title Size
+	var titleFontSize = 60
+	var titletextWidth = BoldFont.widthOfTextAtSize(titleText, titleFontSize);
+	//Reduce Size Till Fit
+	while (titletextWidth > page.getWidth() - 50){
+		titleFontSize = titleFontSize - 4;
 		titletextWidth = BoldFont.widthOfTextAtSize(titleText, titleFontSize);
-	} else {
-		var titleFontSize = 72;
 	}
-	//page.moveTo(25,115);
 	page.drawText(titleText, {
 		x: page.getWidth() / 2 - titletextWidth / 2,
 		y: 115,
@@ -111,6 +114,8 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 		color: PDFLib.rgb(0.93,1.00,0.00),
 		font: BoldFont
 	})
+	//END Dynamic Title Size
+
 
 
 	//Barcode Generator
@@ -119,71 +124,60 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,elementID,B
 		JsBarcode(canvas, text, {format: "CODE39", margin: 5, fontSize: 0, marginTop:0, marginBottom:0, flat:true});
 		return canvas.toDataURL("image/png");
 	}
-	//Barcode IMG
+	//Create Barcode IMG
 	var jpgBarcodeBase64 = textToBase64Barcode(idText)
-	console.log(jpgBarcodeBase64);
-	const jpgBarcodeBytes = await jpgBarcodeBase64;
-	const jpgBarcode = await pdfDoc.embedPng(jpgBarcodeBytes)
-	const jpgBarcodeDims = jpgImage.scale(1)
+	var jpgBarcodeBytes = await jpgBarcodeBase64;
+	var jpgBarcode = await pdfDoc.embedPng(jpgBarcodeBytes)
+	var jpgBarcodeDims = jpgImage.scale(1)
+	//Draw Barcode
+	page.drawImage(jpgBarcode, {
+		x: 40,
+		y: 1,
+		width: page.getWidth() - 80,
+		height: 95
+	})
+	//End Barcode Generator
+
+
+
+	//CLEVER Badge
+	//Add Page 2
+	var page2 = pdfDoc.addPage([540, 840]);
+	//CleverBarcode
+	var pngUrl = 'assets/clever/' + cleverqr;
+	var pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer());
+	var pngImage = await pdfDoc.embedPng(pngImageBytes)
+	var ImgW = page2.getWidth()-page2.getWidth()*.33;
+	var ImgH = page2.getWidth()-page2.getWidth()*.33;
 	//Draw Image
 	//page.moveTo(300, 650);	
-	page.drawImage(jpgBarcode, {
-	x: 40,//page.getWidth() / 2 - jpgBarcodeDims.width / 2,
-	y: 1,
-	width: page.getWidth() - 80, //jpgBarcodeDims.width,
-	height: 95//jpgBarcodeDims.height,
+	page2.drawImage(pngImage, {
+	x: page2.getWidth() / 2 - ImgW/2,     //jpgDims.width / 2,
+	y: page2.getHeight() / 2 - ImgH/2 + 15,    // - jpgDims.height / 2 ,
+	width: ImgW,       //jpgDims.width,
+	height: ImgH       //jpgDims.height,
 	})
+
+	//Draw Clever Logo
+	var logoCleverUrl = 'assets/clever/_CleverLogo.png';
+	var logoImageBytes = await fetch(logoCleverUrl).then((res) => res.arrayBuffer());
+	var logoImage = await pdfDoc.embedPng(logoImageBytes)
+	var logoDims = logoImage.scale(1)
+	var logoW = page2.getWidth()-page2.getWidth()*.33;
+	var logoH = 100;
+	//Draw Image
 	
-	//CLEVER Badge
-	var checkCleverPath = process.cwd()+'\\www\\assets\\clever\\'+id+'.png';
-	if (fs.existsSync(checkCleverPath)) { 
-		//Add Page 2
-		const page2 = pdfDoc.addPage([540, 840]);
-		//CleverBarcode
-		var pngUrl = checkCleverPath;
-		var bitmap = fs.readFileSync(pngUrl);
-		var pngImgBase64 = Buffer(bitmap).toString('base64');
-		const pngImageBytes = await pngImgBase64;
-		const pngImage = await pdfDoc.embedPng(pngImageBytes)
-		const pngDims = pngImage.scale(1)
-		const ImgW = page2.getWidth()-page2.getWidth()*.33;
-		const ImgH = page2.getWidth()-page2.getWidth()*.33;
-		//Draw Image
-		//page.moveTo(300, 650);	
-		page2.drawImage(pngImage, {
-		x: page2.getWidth() / 2 - ImgW/2,     //jpgDims.width / 2,
-		y: page2.getHeight() / 2 - ImgH/2 + 15,    // - jpgDims.height / 2 ,
-		width: ImgW,       //jpgDims.width,
-		height: ImgH       //jpgDims.height,
-		})
-
-		//Draw Clever Logo
-		var logoCleverUrl = process.cwd()+'\\www\\assets\\clever\\_CleverLogo.png';
-		var bitmap = fs.readFileSync(logoCleverUrl);
-		var logoImgBase64 = Buffer(bitmap).toString('base64');
-		const logoImageBytes = await logoImgBase64;
-		const logoImage = await pdfDoc.embedPng(logoImageBytes)
-		const logoDims = logoImage.scale(1)
-		const logoW = page2.getWidth()-page2.getWidth()*.33;
-		const logoH = 100;//page2.getWidth()-page2.getWidth()*.15;
-		//Draw Image
-		
-		page2.drawImage(logoImage, {
-			x: page2.getWidth() / 2 - ImgW/2,     
-			y: page2.getHeight() / 2 - ImgH/2 - 100,    
-			width: logoW,       
-			height: logoH       
-		})
+	page2.drawImage(logoImage, {
+		x: page2.getWidth() / 2 - ImgW/2,     
+		y: page2.getHeight() / 2 - ImgH/2 - 100,    
+		width: logoW,       
+		height: logoH       
+	})
 
 
-
-		
-
-		
-	} else {
-		
-	}
-	
-	const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-	document.getElementById(elementID).src = pdfDataUri;
+	//Draw Out PDF
+	const pdfDataUri = await pdfDoc.saveAsBase64();
+	var pdfBlob = dataURItoBlob(pdfDataUri);
+	var newSrc = window.URL.createObjectURL(pdfBlob);
+	document.getElementById(elementID).src = newSrc;
 }
