@@ -12,10 +12,10 @@ Expand-Archive .\badges.zip
 $BadgeLocation = (Get-Item $ThisLocation).FullName + "\badges" 
 
 #Loop through Folders
-$AllFolders = Get-ChildItem -Recurse $BadgeLocation | Where { $_.PSIsContainer }
+$AllFolders = Get-ChildItem -Recurse $BadgeLocation | Where-Object { $_.PSIsContainer }
 forEach($Folder in $AllFolders) {
     #Loop Through Images
-    $Items = Get-ChildItem -Path $Folder.FullName -Include *.png -Depth 1 | Where { ! $_.PSIsContainer }
+    $Items = Get-ChildItem -Path $Folder.FullName -Include *.png -Depth 1 | Where-Object { ! $_.PSIsContainer }
     forEach($Item in $Items){
         # 6 Digit Number 
         $NewName = $Item.Name.Substring(($Item.Name.Length) - 10, 10)

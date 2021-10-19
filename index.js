@@ -9,7 +9,6 @@ const { v4: uuidv4 } = require('uuid');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const shell = require('node-powershell');
 const { Console } = require('console');
@@ -19,10 +18,6 @@ const { json } = require('body-parser');
 const configFile = fs.readFileSync(process.cwd()+"\\config.json");
 const config = JSON.parse(configFile);
 
-
-//Probably NOT NEEDED
-// Session and Cookie Setup
-//app.use(cookieParser());
 
 
 //
@@ -63,46 +58,6 @@ app.get('/', function(req, res){
 //
 //
 
-/*
-// Login Authentication
-app.post('/ps1/auth/:script', function(req, res) {
-	console.log(req.params);
-
-    const script = req.params.script;
-	const psparams = JSON.stringify(req.body);
-	
-	let ps1 = new shell({
-		executionPolicy: 'Bypass',
-		noProfile: true
-	});
-	
-	ps1.addCommand(process.cwd()+'\\ps1\\auth\\' + script + ' -JSON \'' + psparams + '\'');
-	ps1.invoke()
-	.then(output => {
-		// Check if credentials valid
-		var outputJSON = JSON.parse(output);
-		if (outputJSON.Credentials == "Valid"){
-			const cookie = require('./includes/cookies.js');
-			cookie.setAuthenticatedCookie(psparams);
-	
-			req.session.Username = psparams.Username;
-
-
-
-		} else {
-			const cookie = require('./includes/cookies.js');
-			cookie.expireAuthenticatedCookie(psparams);
-		}
-		res.send(output);
-	})
-	.catch(err => {
-		console.log("Failed Execution");
-		console.log(err);
-		res.send(err);
-		ps1.dispose();
-	});
-});
-*/
 
 //
 // Config Based Authentication
@@ -111,7 +66,6 @@ app.post('/authenticate', function(req, res) {
 	console.log(req.params);
 	console.log(req.session.id);
 	const sessionID = req.session.id;
-    //const script = req.params.script;
 	const psparams = JSON.stringify(req.body);
 	
 	let ps1 = new shell({
@@ -125,17 +79,10 @@ app.post('/authenticate', function(req, res) {
 		// Check if credentials valid
 		var outputJSON = JSON.parse(output);
 		if (outputJSON.Credentials == "Valid"){
-			//const cookie = require('./includes/cookies.js');
-			//cookie.setAuthenticatedCookie(psparams);
-			//req.session.Username = psparams.Username;
-
+			req.session.Username = psparams.Username;
 			// Valid Session, Set Authenticated Cookie Session
 			saveLoginInformation(sessionID, psparams, req);
-
 		} else {
-			//const cookie = require('./includes/cookies.js');
-			//cookie.expireAuthenticatedCookie(psparams);
-
 		}
 
 		res.send(output);
@@ -156,6 +103,9 @@ app.post('/authenticate', function(req, res) {
 // Powershell GET Processor
 //
 app.get('/ps1/get/:script', function(req, res) {
+	if (validateSessionInformation(req) == false){
+		return "Not Authenticated";
+	}
     console.log("GET " + req.params);
     const script = req.params.script;
 	const psparams = JSON.stringify(req.body);
@@ -186,9 +136,9 @@ app.get('/ps1/get/:script', function(req, res) {
 // Powershell POST Processor
 //
 app.post('/ps1/post/:script', function(req, res) {
-	//if (validateSessionInformation(req) == false){
-	//	return "Not Authenticated";
-	//}
+	if (validateSessionInformation(req) == false){
+		return "Not Authenticated";
+	}
 	const script = req.params.script;
 	const psparams = JSON.stringify(req.body);
 	
@@ -228,6 +178,10 @@ app.get('/api/:APICall', function(req, res) {
 			} else {
 				res.send({ "SessionState": "Valid" });
 			}
+			break;
+		case 'logout':
+			req.session.destroy();
+			res.redirect(config.LogoutRedirectPage);
 			break;
 		//
 		// Default Login Redirected Page
@@ -271,14 +225,14 @@ app.get('/default',function (req, res) {
 
 
 //
-// Testing URL
+// Default Logout Page Redirect
 //
-app.get('/testing',function (req, res) {
-	testSQLite();
-	res.send("Testing Complete");
+app.get('/logout',function (req, res) {
+	req.session.destroy();
+	res.redirect(config.LogoutRedirectPage);
 });
 //
-// END Testing URL
+// END Default Logout Page Redirect
 //
 
 
@@ -293,18 +247,6 @@ app.get('*',function (req, res) {
 //
 
 
-//
-// Start Server
-//
-app.listen(config.HTTPPort, function(error){ 
-	if(error) throw error 
-	console.log(config.ApplicationName + " Started on port " + config.HTTPPort);
-	console.log("http://"+os.hostname()+":"+config.HTTPPort);
-});
-//
-// END Start Server
-//
-
 
 //
 // Authentication Cookie and Session information
@@ -315,8 +257,6 @@ function saveLoginInformation(sessionID, userInfo, req){
 	userInfo = JSON.parse(userInfo);
 	req.session.Username = userInfo.Username;
 	saveSessionData(req,userInfo.Username);
-	// SessionID User Hash
-	//req.session.SessionHash = crypto.createHash('sha256').update(sessionID + userInfo.Username + random).digest('base64');
 	console.log("Username is " + req.session.Username + " on Session " + req.session.id);
 }
 //
@@ -341,120 +281,32 @@ function validateSessionInformation(req){
 
 
 //
-// TESTING SQLITE
-//
-function testSQLite(){
-	let db = new sqlite3.Database('sessionStore.db', (err) => {
-		if (err) {
-		  return console.error(err.message);
-		} else {
-			let sql = `SELECT * FROM sessions ORDER BY start`;
-
-			db.all(sql, [], (err, rows) => {
-				if (err) {
-					throw err;
-				}
-				rows.forEach((row) => {
-					//Constructor
-					startDate = new Date(parseInt(row.start));
-					expireDate = new Date(parseInt(row.expire));
-					console.log("Start " + startDate.toString() + " Expire " + expireDate.toString());
-				});
-			});
-
-		}
-	  });
-	  
-	  // close the database connection
-	  db.close((err) => {
-		if (err) {
-		  return console.error(err.message);
-		}
-		console.log('Close the database connection.');
-	  });
-}
-//
-// TESTING SQLITE
-//
-
-
-//
-// Save Session Data to SQLITE
+// Save Session Data
 //
 function saveSessionData(req,Username){
 	// Setup Dates
 	var nowDate = new Date().getTime();
 	var expireDate = parseInt(nowDate) + parseInt(config.CookieMaxAge);
-	// Connnect
-	let db = new sqlite3.Database('sessionStore.db', (err) => {
-		if (err) {
-		  return console.error(err.message);
-		} else {
-			// Insert Data
-			db.run(`INSERT INTO sessions(id,username,start,expire) VALUES(?,?,?,?)`, 
-				[req.sessionID, Username, nowDate.toString(), expireDate.toString()],nowDate, expireDate, function(err) {
-				if (err) {
-				return console.log(err.message);
-				}
-				// get the last insert id
-				console.log(`A row has been inserted with rowid ${this.lastID}`);
-			});
-			// close the database connection
-			db.close();
-		}
-	});
 }
 //
-// Save Session Data to SQLITE
+// Save Session Data 
 //
 
 
-//
-// Database Session Cleanup
-//
-function cleanupSessionData(){
 
-}
-//
-// END Database Session Cleanup
-//
+
 
 
 //
-// Create SQLITE Session Store
+// Start Secure Server
 //
-function createSQLiteStore(){
-	let db = new sqlite3.Database('sessionStore.db', (err) => {
-		if (err) {
-		  return console.error(err.message);
-		}
-		try {
-			db.run('CREATE TABLE IF NOT EXISTS sessions(id text, username text, start int, expire int)');
-			console.log('Created SQlite Session Store.');
-		}
-		catch {
-			console.log('DID NOT Created SQlite Session Store.');
-		}
-
-	  });
-	  
-	  // close the database connection
-	  db.close((err) => {
-		if (err) {
-		  return console.error(err.message);
-		}
-		console.log('Close the database connection.');
-	  });
-}
-//
-// Create SQLITE Session Store
-//
-
-
-//
-// Once Per Start Execution
-//
-createSQLiteStore();
-//
-// END Once Per Start Execution
-//
+https.createServer({
+    key: fs.readFileSync(process.cwd()+config.PrivateKey),
+    cert: fs.readFileSync(process.cwd()+config.Certificate),
+    passphrase: config.CertificatePassword
+}, app)
+.listen(config.SSLPort, function (error){
+	if(error) throw error 
+	console.log(config.ApplicationName + " Started on port " + config.SSLPort);
+	console.log("https://"+os.hostname()+":"+config.SSLPort);
+});

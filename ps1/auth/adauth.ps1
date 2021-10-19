@@ -67,8 +67,15 @@ if($Data.Username -And $Data.Password ) {
                 Credentials = "Invalid"
             }
         } elseif ($credentialState -eq "Valid") {
-            $Return = New-Object PSObject -Property @{
-                Credentials = "Valid"
+            #Check Group Membership
+            if(Get-ADGroupMember -Identity 'BadgePrinters' | Where-Object {$_.SamAccountName -eq $Data.Username}){
+                $Return = New-Object PSObject -Property @{
+                    Credentials = "Valid"
+                }
+            } else {
+                $Return = New-Object PSObject -Property @{
+                    Credentials = "Invalid"
+                }
             }
         }
     }

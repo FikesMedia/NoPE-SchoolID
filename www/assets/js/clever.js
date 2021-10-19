@@ -191,7 +191,6 @@ function GetUserInformation(Username) {
 				var badgeID = userJSON.pager.toString();
 				var badgephoto = userJSON.badgephoto;
 				var cleverqr = userJSON.cleverqr;
-				console.log("Clever Photo is " + cleverqr)
 
 				document.getElementById("firstnamefield").value = firstName;
 				document.getElementById("lastnamefield").value = lastName;
@@ -201,7 +200,7 @@ function GetUserInformation(Username) {
 
 				if (cleverqr != 'NONE') { 
 					//Draw PDF
-					createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,cleverqr,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+					createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,cleverqr,"pdfBadge",defaults.BGColor,defaults.TitleColor,defaults.TXTColor);
 
 					//Enable Buttons
 					document.getElementById('updateInfoBtn').removeAttribute("disabled");
@@ -221,7 +220,12 @@ function GetUserInformation(Username) {
 
 $(document).ready(function() {
 
-	
+	// Check Session State
+	$.getJSON( "/api/validate", function( output ) {
+		if(output.SessionState != "Valid") {
+			window.location.replace('/login.html');
+		}
+	});	
 
 	
 	document.getElementById('updateInfoBtn').setAttribute("disabled", "");

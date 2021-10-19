@@ -198,7 +198,7 @@ function GetUserInformation(Username) {
 				document.getElementById("badgeidfield").value = badgeID;
 
 				//Draw PDF
-				createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+				createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TitleColor,defaults.TXTColor);
 
 				//Enable Buttons
 				document.getElementById('updateInfoBtn').removeAttribute("disabled");
@@ -214,6 +214,13 @@ function GetUserInformation(Username) {
 
 
 $(document).ready(function() {
+
+	// Check Session State
+	$.getJSON( "/api/validate", function( output ) {
+		if(output.SessionState != "Valid") {
+			window.location.replace('/login.html');
+		}
+	});
 
 	
 

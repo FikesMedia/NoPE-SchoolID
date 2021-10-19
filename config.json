@@ -9,7 +9,8 @@
     "Certificate":"\\cert\\cert.pem",
     "CertificatePassword":"password",
     "AuthenticationEnabled":"TRUE",
-    "AuthenticationMethod":"\\ps1\\auth\\userdb.ps1",
+    "AuthenticationMethod":"\\ps1\\auth\\adauth.ps1",
     "AuthenticatedRedirectPage":"/index.html",
+    "LogoutRedirectPage":"/login.html",
     "DatabaseLocation":"db.sqlite"
 }

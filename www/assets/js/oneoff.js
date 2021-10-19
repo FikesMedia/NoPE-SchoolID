@@ -163,7 +163,7 @@ function checkDataAndPrint() {
 		}
 
 		//Draw PDF
-		createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TXTColor);
+		createPdf(company,firstName,lastName,title,empID,badgeID,badgephoto,"pdfBadge",defaults.BGColor,defaults.TitleColor,defaults.TXTColor);
 		
 		//Enable Print Button
 		$("#printBtn").prop("disabled", false);
@@ -183,6 +183,13 @@ function checkDataAndPrint() {
 // Document Preparation
 //
 $(document).ready(function() {
+
+	// Check Session State
+	$.getJSON( "/api/validate", function( output ) {
+		if(output.SessionState != "Valid") {
+			window.location.replace('/login.html');
+		}
+	});
 
 	//Disable Print and Photo Button until Data Available
 	$("#printBtn").prop("disabled", true);
@@ -206,6 +213,14 @@ $(document).ready(function() {
 		}
 
 	});
+
+
+	//Load Defaults
+	$.getJSON("./defaults.json", function(defaults){
+		$("#companyfield").val(defaults.Company);
+
+	});
+ 
 
 	//Monitor Generate Button
 	$("#generateIdBtn").click(function(){

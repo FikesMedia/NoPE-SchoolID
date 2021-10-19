@@ -1,10 +1,17 @@
-var debugMode = 0;
-
 $(document).ready(function(){
+    var debugMode = 1;
+
+    //Prevent form Submission
+	$("form").submit(function(e){
+		e.preventDefault();
+	});
+
+
 
     $("#form-signin").submit(function(e){
         // Clear Message 
         document.getElementById("loginMessage").innerHTML = "&nbsp;";
+        document.getElementById("loginMessage").innerHTML = "Checking Credentials . . .";
 
         e.preventDefault();
         

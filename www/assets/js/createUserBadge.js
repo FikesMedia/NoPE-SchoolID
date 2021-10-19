@@ -10,7 +10,43 @@ function dataURItoBlob(dataURI) {
 	return blob;
 }
 
-async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,elementID,BGColor,TXTColor) {
+
+//Color Space Convertions
+function HextoPDFColor(hex) {
+	//Convert RGBtoHex
+	function ColorToHex(color) {
+		var hexadecimal = color.toString(16);
+		return hexadecimal.length == 1 ? "0" + hexadecimal : hexadecimal;
+	}
+
+	function ConvertRGBtoHex(red, green, blue) {
+		return ColorToHex(red) + ColorToHex(green) + ColorToHex(blue);
+	}
+
+	function ConvertHextoRGB(hex) {
+		var red = parseInt(hex[1]+hex[2],16);
+		var green = parseInt(hex[3]+hex[4],16);
+		var blue = parseInt(hex[5]+hex[6],16);
+		//return String(red) + String(green) + String(blue);
+		var RGBArray = [red,green,blue];
+		return RGBArray;
+	}
+
+	function ConvertoPDFColor(RGB) {
+		//Proportional to Convert
+		var red = RGB[0] / 255;
+		var green = RGB[1] / 255;
+		var blue = RGB[2] / 255;
+		var JSColor =[red,green,blue];
+		return JSColor;
+	}
+
+	var RGBColor = ConvertHextoRGB(hex);
+	var PDFColor = ConvertoPDFColor(RGBColor);
+	return PDFColor;
+} // END Colorspace Conversions
+
+async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,elementID,BGColor,TitleColor,TXTColor) {
 	var companyText = company;
 	var firstNameText = firstName;
 	var lastNameText = lastName;
@@ -22,13 +58,17 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	const pdfDoc = await PDFLib.PDFDocument.create();
 	const page = pdfDoc.addPage([540, 840]);
 	
+	//Convert BGColor
+	var PDFBGColor = HextoPDFColor(BGColor);
+
 	//Background Color
 	page.drawRectangle({
 		x: 0,
 		y: 0,
 		width: page.getWidth(),
 		height: page.getHeight(),
-		color: PDFLib.rgb(0, 0.14, 0.4),
+		//color: PDFLib.rgb(0, 0.14, 0.4),
+		color: PDFLib.rgb(PDFBGColor[0], PDFBGColor[1], PDFBGColor[2]),
 		opacity: 1,
 	})
 
@@ -62,7 +102,9 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	const StandardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica)
 	const BoldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
 
-	
+	//Convert Title Color
+	var PDFTitleColor = HextoPDFColor(TitleColor)
+
 	//Dynamic Company Size
 	var companyFontSize = 72;
 	var companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
@@ -75,11 +117,14 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 		x: page.getWidth() / 2 - companytextWidth / 2,
 		y: 670,
 		size: companyFontSize,
-		color: PDFLib.rgb(0.93,1.00,0.00),
+		//color: PDFLib.rgb(0.93,1.00,0.00),
+		color: PDFLib.rgb(PDFTitleColor[0],PDFTitleColor[1],PDFTitleColor[2]),
 		font: BoldFont
 	})
 	//END Dynamic Company Size
 
+	//Convert Txt Color
+	var PDFTextColor = HextoPDFColor(TXTColor);
 
 	//Dynamic Name Size
 	var nameFontSize = 60;
@@ -93,7 +138,8 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 		x: page.getWidth() / 2 - NameWidth / 2,
 		y: 190,
 		size: nameFontSize,
-		color: PDFLib.rgb(1,1,1),
+		//color: PDFLib.rgb(1,1,1),
+		color: PDFLib.rgb(PDFTextColor[0],PDFTextColor[1],PDFTextColor[2]),
 		font: StandardFont
 	});
 	//End Dynamic Name Size
@@ -111,7 +157,8 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 		x: page.getWidth() / 2 - titletextWidth / 2,
 		y: 115,
 		size: titleFontSize,
-		color: PDFLib.rgb(0.93,1.00,0.00),
+		//color: PDFLib.rgb(0.93,1.00,0.00),
+		color: PDFLib.rgb(PDFTitleColor[0],PDFTitleColor[1],PDFTitleColor[2]),
 		font: BoldFont
 	})
 	//END Dynamic Title Size
