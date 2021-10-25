@@ -131,7 +131,7 @@ function checkDataAndUpdate(){
 
 		//Create the Badge
 		success: function (data){
-			console.log(data);
+			GetUserInformation($("#searchusername").val());
 		}
 	
 	});
