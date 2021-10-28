@@ -7,7 +7,7 @@ School ID Badging solution with Clever QR integration all integrated into your e
 - [x] Simple Setup and Usage
 - [x] Use any printer!
 
-### Features with Sponsorship
+### Upcoming Features
 - [ ] Automatic handling of Clever ZIP exports
 - [ ] Layout Templates
 - [ ] WebHooks for other integrations (Like Door Controls)
