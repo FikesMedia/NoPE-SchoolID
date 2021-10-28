@@ -38,7 +38,6 @@ Your name could be here! Sponsor the project, help out some schools and get your
 
 
 
-
 # Usage
 Users must be part of a `BadgePrinters` Active Directory group to sign into the application. We don't anyone printing id's right? 
 
