@@ -56,7 +56,9 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	var badgephoto = badgephoto;
 	
 	const pdfDoc = await PDFLib.PDFDocument.create();
-	const page = pdfDoc.addPage([540, 840]);
+	//ID-1 Badge Size
+	const page = pdfDoc.addPage([162, 252]);
+	
 	
 	//Convert BGColor
 	var PDFBGColor = HextoPDFColor(BGColor);
@@ -67,7 +69,6 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 		y: 0,
 		width: page.getWidth(),
 		height: page.getHeight(),
-		//color: PDFLib.rgb(0, 0.14, 0.4),
 		color: PDFLib.rgb(PDFBGColor[0], PDFBGColor[1], PDFBGColor[2]),
 		opacity: 1,
 	})
@@ -77,7 +78,7 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 		x: 0,
 		y: 0,
 		width: page.getWidth(),
-		height: 100,
+		height: page.getHeight() * .12,
 		color: PDFLib.rgb(1, 1, 1),
 		opacity: 1,
 	})
@@ -92,7 +93,7 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	//Draw Image	
 	page.drawImage(jpgImage, {
 	x: page.getWidth() / 2 - ImgW/2,
-	y: page.getHeight() / 2 - ImgH/2 + 15,
+	y: page.getHeight() / 2 - ImgH/2 + page.getHeight() * .00,
 	width: ImgW,      
 	height: ImgH
 	})
@@ -106,18 +107,17 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	var PDFTitleColor = HextoPDFColor(TitleColor)
 
 	//Dynamic Company Size
-	var companyFontSize = 72;
+	var companyFontSize = page.getHeight()*.25;
 	var companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
 	//Reduce Till Fit
-	while (companytextWidth > page.getWidth() - 50){
+	while (companytextWidth > page.getWidth() - (page.getWidth() * .10)){
 		companyFontSize = companyFontSize - 4;
 		companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
 	}
 	page.drawText(companyText, {
 		x: page.getWidth() / 2 - companytextWidth / 2,
-		y: 670,
+		y: page.getHeight() * .8, 
 		size: companyFontSize,
-		//color: PDFLib.rgb(0.93,1.00,0.00),
 		color: PDFLib.rgb(PDFTitleColor[0],PDFTitleColor[1],PDFTitleColor[2]),
 		font: BoldFont
 	})
@@ -127,16 +127,16 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	var PDFTextColor = HextoPDFColor(TXTColor);
 
 	//Dynamic Name Size
-	var nameFontSize = 60;
+	var nameFontSize = page.getHeight() * .0825;
 	var NameWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, nameFontSize);
 	//Reduce Size Till Fit
-	while (NameWidth > page.getWidth() - 50){
-		nameFontSize = nameFontSize - 4;
+	while (NameWidth > page.getWidth() - (page.getWidth() * .10)){
+		nameFontSize = nameFontSize - 2;
 		NameWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, nameFontSize);
 	}
 	page.drawText(firstNameText + " " + lastNameText,{ 
 		x: page.getWidth() / 2 - NameWidth / 2,
-		y: 190,
+		y: page.getHeight() * .22,//190,
 		size: nameFontSize,
 		//color: PDFLib.rgb(1,1,1),
 		color: PDFLib.rgb(PDFTextColor[0],PDFTextColor[1],PDFTextColor[2]),
@@ -146,18 +146,17 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 
 
 	//Dynamic Title Size
-	var titleFontSize = 60
+	var titleFontSize = page.getHeight() * .09;
 	var titletextWidth = BoldFont.widthOfTextAtSize(titleText, titleFontSize);
 	//Reduce Size Till Fit
-	while (titletextWidth > page.getWidth() - 50){
+	while (titletextWidth > page.getWidth() - (page.getWidth() * .15)){
 		titleFontSize = titleFontSize - 4;
 		titletextWidth = BoldFont.widthOfTextAtSize(titleText, titleFontSize);
 	}
 	page.drawText(titleText, {
 		x: page.getWidth() / 2 - titletextWidth / 2,
-		y: 115,
+		y: page.getHeight() * .14, //115,
 		size: titleFontSize,
-		//color: PDFLib.rgb(0.93,1.00,0.00),
 		color: PDFLib.rgb(PDFTitleColor[0],PDFTitleColor[1],PDFTitleColor[2]),
 		font: BoldFont
 	})
@@ -178,10 +177,10 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	const jpgBarcodeDims = jpgImage.scale(1)
 	//Draw Barcode
 	page.drawImage(jpgBarcode, {
-		x: 40,
-		y: 1,
-		width: page.getWidth() - 80,
-		height: 95
+		x: page.getWidth() * .08,
+		y: 0,//1,
+		width: page.getWidth() - (page.getWidth() * .16),
+		height: page.getHeight() * .12
 	})
 	//End Barcode Generator
 
