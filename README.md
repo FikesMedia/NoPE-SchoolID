@@ -11,6 +11,7 @@ School ID Badging solution with Clever QR integration all integrated into your e
 - [ ] Automatic handling of Clever ZIP exports (Currently a CLI tool)
 - [ ] Layout Templates
 - [ ] WebHooks for other integrations (Like Door Controls)
+- [ ] Printer Proxy for remote printing from tablet devices.
 
 ## Sponsors
 Your name could be here! Sponsor the project, help out some schools and get your name in the README and in the sponsors section of the application. Advertise you support small local schools.  
