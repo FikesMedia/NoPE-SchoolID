@@ -1,0 +1,14 @@
+$UserName = "TestDomainMorgan" 
+$Password = "MyPa55w0rd"
+$Service = "TestService" #Change your own service name
+$svc_Obj= Get-WmiObject Win32_Service -filter "name='$service'"
+$StopStatus = $svc_Obj.StopService() 
+If ($StopStatus.ReturnValue -eq "0") 
+    {Write-host "The service '$Service' Stopped successfully"} 
+$ChangeStatus = $svc_Obj.change($null,$null,$null,$null,$null,
+                      $null, $UserName,$Password,$null,$null,$null)
+If ($ChangeStatus.ReturnValue -eq "0")  
+    {Write-host "User Name sucessfully for the service '$Service'"} 
+$StartStatus = $svc_Obj.StartService() 
+If ($ChangeStatus.ReturnValue -eq "0")  
+    {Write-host "The service '$Service' Started successfully"} 
