@@ -40,7 +40,7 @@ Your name could be here! Sponsor the project, help out some schools and get your
 
 
 # Usage
-Users must be part of a `BadgePrinters` Active Directory group to sign into the application. We don't anyone printing id's right? 
+Users must be part of a `BadgePrinters` Active Directory group to sign into the application. We don't want anyone printing id's right? 
 
 Sign into the https://URL of your server, and login with your normal AD credentials.
 
