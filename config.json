@@ -4,7 +4,7 @@
     "HTTPPort":"8080",
     "SSLPort":"443",
     "CookieSecret":"1234567890",
-    "CookieMaxAge":"600000",
+    "CookieMaxAge":"120000",
     "PrivateKey":"\\cert\\key.pem",
     "Certificate":"\\cert\\cert.pem",
     "CertificatePassword":"password",
