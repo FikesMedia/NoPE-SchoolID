@@ -131,7 +131,8 @@ function checkDataAndUpdate(){
 
 		//Create the Badge
 		success: function (data){
-			GetUserInformation($("#searchusername").val());
+			GetUserInformation(document.getElementById("searchusername").value);
+			console.log(data);
 		}
 	
 	});
@@ -216,14 +217,16 @@ function GetUserInformation(Username) {
 $(document).ready(function() {
 
 	// Extend Session
+	
 	var keepSessionValid = window.setInterval(
 		function(){
 			$.getJSON( "/api/validate", function( output ) {
 				// Remain Valid
 				console.log("Session Extended");
 			});
-		}, 30000
+		}, 20000
 	);
+
 
 	// Check Session State
 	$.getJSON( "/api/validate", function( output ) {
@@ -300,6 +303,7 @@ $(document).ready(function() {
 
 	$("#updateInfoBtn").click(function(){
 		checkDataAndUpdate();
+		
 	});
 	
 

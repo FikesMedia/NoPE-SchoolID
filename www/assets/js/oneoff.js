@@ -58,8 +58,9 @@ function use_snapshot() {
 		success: function (data){
 		}
 	});
-
+	
 	checkDataAndPrint();
+	
 } // END Photo Save
 
 
@@ -195,7 +196,7 @@ $(document).ready(function() {
 			});
 		}, 30000
 	);
-
+	
 	// Check Session State
 	$.getJSON( "/api/validate", function( output ) {
 		if(output.SessionState != "Valid") {

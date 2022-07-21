@@ -131,7 +131,8 @@ function checkDataAndUpdate(){
 
 		//Create the Badge
 		success: function (data){
-			GetUserInformation($("#searchusername").val());
+			GetUserInformation(document.getElementById("searchusername").value);
+			console.log(data);
 		}
 	
 	});
@@ -191,12 +192,15 @@ function GetUserInformation(Username) {
 				var badgeID = userJSON.pager.toString();
 				var badgephoto = userJSON.badgephoto;
 				var cleverqr = userJSON.cleverqr;
+				console.log("Clever Photo is " + defaults.TXTColor)
 
 				document.getElementById("firstnamefield").value = firstName;
 				document.getElementById("lastnamefield").value = lastName;
 				document.getElementById("titlefield").value = title;
 				document.getElementById("idfield").value = empID;
 				document.getElementById("badgeidfield").value = badgeID;
+
+	console.log(company,firstName,lastName,title,empID,badgeID,badgephoto,cleverqr,"pdfBadge",defaults.BGColor,defaults.TitleColor,defaults.TXTColor);
 
 				if (cleverqr != 'NONE') { 
 					//Draw PDF
@@ -221,15 +225,16 @@ function GetUserInformation(Username) {
 $(document).ready(function() {
 
 	// Extend Session
+	
 	var keepSessionValid = window.setInterval(
 		function(){
 			$.getJSON( "/api/validate", function( output ) {
 				// Remain Valid
 				console.log("Session Extended");
 			});
-		}, 30000
+		}, 20000
 	);
-	
+
 	
 	// Check Session State
 	$.getJSON( "/api/validate", function( output ) {

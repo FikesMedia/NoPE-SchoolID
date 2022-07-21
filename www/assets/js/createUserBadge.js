@@ -184,6 +184,25 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	})
 	//End Barcode Generator
 
+	//Suicide Ptevention Line
+	//Add Page 2
+	var page2 = pdfDoc.addPage([162, 252]);
+
+	//Draw Suicide Prevention Line Information
+	var splLogoUrl = 'assets/img/SuicidePreventionLine.jpg';
+	var splImageBytes = await fetch(splLogoUrl).then((res) => res.arrayBuffer());
+	var splImage = await pdfDoc.embedJpg(splImageBytes);
+	var splW = page2.getWidth();
+	var splH = page2.getHeight();
+	//Draw Image
+	
+	page2.drawImage(splImage, {
+		x: 0,   
+		y: 0,
+		width: splW,       
+		height: splH       
+	})
+
 
 	//Draw Out PDF
 	const pdfDataUri = await pdfDoc.saveAsBase64();

@@ -56,8 +56,10 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	var badgephoto = badgephoto;
 	
 	const pdfDoc = await PDFLib.PDFDocument.create();
-	const page = pdfDoc.addPage([540, 840]);
-
+	//ID-1 Badge Size
+	const page = pdfDoc.addPage([162, 252]);
+	
+	
 	//Convert BGColor
 	var PDFBGColor = HextoPDFColor(BGColor);
 
@@ -76,66 +78,67 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 		x: 0,
 		y: 0,
 		width: page.getWidth(),
-		height: 100,
+		height: page.getHeight() * .12,
 		color: PDFLib.rgb(1, 1, 1),
 		opacity: 1,
 	})
 
 	//Badge Image
-	var jpgUrl = 'assets/photos/' + badgephoto;
-	var jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
-	var jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
-	var ImgW = page.getWidth()-page.getWidth()*.33;
-	var ImgH = page.getWidth()-page.getWidth()*.33;
+	const jpgUrl = 'assets/photos/' + badgephoto;
+	const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer());
+	const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
+	const ImgW = page.getWidth()-page.getWidth()*.33;
+	const ImgH = page.getWidth()-page.getWidth()*.33;
 
 	//Draw Image	
 	page.drawImage(jpgImage, {
 	x: page.getWidth() / 2 - ImgW/2,
-	y: page.getHeight() / 2 - ImgH/2 + 15,
+	y: page.getHeight() / 2 - ImgH/2 + page.getHeight() * .00,
 	width: ImgW,      
 	height: ImgH
 	})
 
 
 	//Set Font
-	var StandardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica)
-	var BoldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
+	const StandardFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica)
+	const BoldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
 
 	//Convert Title Color
 	var PDFTitleColor = HextoPDFColor(TitleColor)
 
 	//Dynamic Company Size
-	var companyFontSize = 72;
+	var companyFontSize = page.getHeight()*.25;
 	var companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
 	//Reduce Till Fit
-	while (companytextWidth > page.getWidth() - 50){
+	while (companytextWidth > page.getWidth() - (page.getWidth() * .10)){
 		companyFontSize = companyFontSize - 4;
 		companytextWidth = BoldFont.widthOfTextAtSize(companyText, companyFontSize);
 	}
 	page.drawText(companyText, {
 		x: page.getWidth() / 2 - companytextWidth / 2,
-		y: 670,
+		y: page.getHeight() * .8, 
 		size: companyFontSize,
 		color: PDFLib.rgb(PDFTitleColor[0],PDFTitleColor[1],PDFTitleColor[2]),
 		font: BoldFont
 	})
 	//END Dynamic Company Size
-	
+
 	//Convert Txt Color
 	var PDFTextColor = HextoPDFColor(TXTColor);
 
 	//Dynamic Name Size
-	var nameFontSize = 60;
+	var nameFontSize = page.getHeight() * .0825;
 	var NameWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, nameFontSize);
 	//Reduce Size Till Fit
-	while (NameWidth > page.getWidth() - 50){
-		nameFontSize = nameFontSize - 4;
+	while (NameWidth > page.getWidth() - (page.getWidth() * .10)){
+		nameFontSize = nameFontSize - 2;
 		NameWidth = StandardFont.widthOfTextAtSize(firstNameText + " " + lastNameText, nameFontSize);
 	}
 	page.drawText(firstNameText + " " + lastNameText,{ 
 		x: page.getWidth() / 2 - NameWidth / 2,
-		y: 190,
+		y: page.getHeight() * .22,//190,
 		size: nameFontSize,
+		//color: PDFLib.rgb(1,1,1),
 		color: PDFLib.rgb(PDFTextColor[0],PDFTextColor[1],PDFTextColor[2]),
 		font: StandardFont
 	});
@@ -143,16 +146,16 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 
 
 	//Dynamic Title Size
-	var titleFontSize = 60
+	var titleFontSize = page.getHeight() * .09;
 	var titletextWidth = BoldFont.widthOfTextAtSize(titleText, titleFontSize);
 	//Reduce Size Till Fit
-	while (titletextWidth > page.getWidth() - 50){
+	while (titletextWidth > page.getWidth() - (page.getWidth() * .15)){
 		titleFontSize = titleFontSize - 4;
 		titletextWidth = BoldFont.widthOfTextAtSize(titleText, titleFontSize);
 	}
 	page.drawText(titleText, {
 		x: page.getWidth() / 2 - titletextWidth / 2,
-		y: 115,
+		y: page.getHeight() * .14, //115,
 		size: titleFontSize,
 		color: PDFLib.rgb(PDFTitleColor[0],PDFTitleColor[1],PDFTitleColor[2]),
 		font: BoldFont
@@ -169,15 +172,15 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 	}
 	//Create Barcode IMG
 	var jpgBarcodeBase64 = textToBase64Barcode(idText)
-	var jpgBarcodeBytes = await jpgBarcodeBase64;
-	var jpgBarcode = await pdfDoc.embedPng(jpgBarcodeBytes)
-	var jpgBarcodeDims = jpgImage.scale(1)
+	const jpgBarcodeBytes = await jpgBarcodeBase64;
+	const jpgBarcode = await pdfDoc.embedPng(jpgBarcodeBytes)
+	const jpgBarcodeDims = jpgImage.scale(1)
 	//Draw Barcode
 	page.drawImage(jpgBarcode, {
-		x: 40,
-		y: 1,
-		width: page.getWidth() - 80,
-		height: 95
+		x: page.getWidth() * .08,
+		y: 0,//1,
+		width: page.getWidth() - (page.getWidth() * .16),
+		height: page.getHeight() * .12
 	})
 	//End Barcode Generator
 
@@ -185,34 +188,34 @@ async function createPdf(company,firstName,lastName,title,id,badgeid,badgephoto,
 
 	//CLEVER Badge
 	//Add Page 2
-	var page2 = pdfDoc.addPage([540, 840]);
+	const page2 = pdfDoc.addPage([162, 252]);
 	//CleverBarcode
-	var pngUrl = 'assets/clever/' + cleverqr;
+	var pngUrl = '/assets/clever/' + cleverqr;
 	var pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer());
 	var pngImage = await pdfDoc.embedPng(pngImageBytes)
-	var ImgW = page2.getWidth()-page2.getWidth()*.33;
-	var ImgH = page2.getWidth()-page2.getWidth()*.33;
+	var CImgW = page2.getWidth()-page2.getWidth()*.33;
+	var CImgH = page2.getWidth()-page2.getWidth()*.33;
 	//Draw Image
 	//page.moveTo(300, 650);	
 	page2.drawImage(pngImage, {
-	x: page2.getWidth() / 2 - ImgW/2,     //jpgDims.width / 2,
-	y: page2.getHeight() / 2 - ImgH/2 + 15,    // - jpgDims.height / 2 ,
-	width: ImgW,       //jpgDims.width,
-	height: ImgH       //jpgDims.height,
+	x: page2.getWidth() / 2 - CImgW/2,     //jpgDims.width / 2,
+	y: page2.getHeight() / 2 - CImgH/2,    // - jpgDims.height / 2 ,
+	width: CImgW,       //jpgDims.width,
+	height: CImgH       //jpgDims.height,
 	})
 
 	//Draw Clever Logo
-	var logoCleverUrl = 'assets/clever/_CleverLogo.png';
+	var logoCleverUrl = 'assets/img/CleverLogo.png';
 	var logoImageBytes = await fetch(logoCleverUrl).then((res) => res.arrayBuffer());
 	var logoImage = await pdfDoc.embedPng(logoImageBytes)
 	var logoDims = logoImage.scale(1)
 	var logoW = page2.getWidth()-page2.getWidth()*.33;
-	var logoH = 100;
+	var logoH = page2.getHeight()-page2.getHeight()*.88;
 	//Draw Image
 	
 	page2.drawImage(logoImage, {
 		x: page2.getWidth() / 2 - ImgW/2,     
-		y: page2.getHeight() / 2 - ImgH/2 - 100,    
+		y: page2.getHeight() / 6 ,
 		width: logoW,       
 		height: logoH       
 	})
