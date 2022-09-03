@@ -85,7 +85,7 @@ app.post('/authenticate', function(req, res) {
 			saveLoginInformation(sessionID, psparams, req);
 		} else {
 		}
-
+		ps1.dispose();
 		res.send(output);
 	})
 	.catch(err => {
@@ -119,6 +119,7 @@ app.get('/ps1/get/:script', function(req, res) {
 	ps1.addCommand(process.cwd()+'\\ps1\\get\\' + script + ' -JSON \'' + psparams + '\'');
 	ps1.invoke()
 	.then(output => {
+		ps1.dispose();
 		res.send(output);
 	})
 	.catch(err => {
@@ -151,6 +152,7 @@ app.post('/ps1/post/:script', function(req, res) {
 	ps1.addCommand(process.cwd()+'\\ps1\\post\\' + script + ' -JSON \'' + psparams + '\'');
 	ps1.invoke()
 	.then(output => {
+		ps1.dispose();
 		res.send(output);
 	})
 	.catch(err => {
