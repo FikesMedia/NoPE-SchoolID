@@ -15,7 +15,6 @@ function Test-ADCrential {
         }
         if($Credential.username.split("\").count -ne 2) {
             return "Invalid"
-            #throw "You haven't entered credentials in DOMAIN\USERNAME format. Given value : $($Credential.Username)"
         }
      
         $DomainName = $Credential.username.Split("\")[0]
@@ -92,7 +91,3 @@ if($Data.Username -And $Data.Password ) {
 
 $ReturnJSON = $Return | ConvertTo-Json
 Write-Host $ReturnJSON
-
-
-
-

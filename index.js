@@ -1,4 +1,3 @@
-
 const os = require('os');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -14,10 +13,10 @@ const shell = require('node-powershell');
 const { Console } = require('console');
 const { json } = require('body-parser');
 
+
 // Configuration
 const configFile = fs.readFileSync(process.cwd()+"\\config.json");
 const config = JSON.parse(configFile);
-
 
 
 //
@@ -85,15 +84,15 @@ app.post('/authenticate', function(req, res) {
 			saveLoginInformation(sessionID, psparams, req);
 		} else {
 		}
-
+		ps1.dispose();
 		res.send(output);
 	})
 	.catch(err => {
 		console.log("Failed Execution");
 		console.log(err);
-		res.send(err);
 		ps1.dispose();
-	});
+		res.send(err);
+	})
 });
 //
 // END Config Based Login
@@ -119,6 +118,7 @@ app.get('/ps1/get/:script', function(req, res) {
 	ps1.addCommand(process.cwd()+'\\ps1\\get\\' + script + ' -JSON \'' + psparams + '\'');
 	ps1.invoke()
 	.then(output => {
+		ps1.dispose();
 		res.send(output);
 	})
 	.catch(err => {
@@ -151,6 +151,7 @@ app.post('/ps1/post/:script', function(req, res) {
 	ps1.addCommand(process.cwd()+'\\ps1\\post\\' + script + ' -JSON \'' + psparams + '\'');
 	ps1.invoke()
 	.then(output => {
+		ps1.dispose();
 		res.send(output);
 	})
 	.catch(err => {
@@ -248,7 +249,6 @@ app.get('*',function (req, res) {
 //
 
 
-
 //
 // Authentication Cookie and Session information
 //
@@ -292,8 +292,6 @@ function saveSessionData(req,Username){
 //
 // Save Session Data 
 //
-
-
 
 
 
