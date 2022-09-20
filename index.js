@@ -1,17 +1,14 @@
+// Requirements
 const os = require('os');
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MemoryStore = require('memorystore')(session)
 const { v4: uuidv4 } = require('uuid');
 const https = require('https');
-const path = require('path');
 const fs = require('fs');
 const app = express();
 const shell = require('node-powershell');
-const { Console } = require('console');
-const { json } = require('body-parser');
 
 
 // Configuration
@@ -30,13 +27,13 @@ app.use(session({
 		checkPeriod: 3600000
 	}),
 	secret: config.CookieSecret,
-	resave: true,
+	resave: false,
 	rolling: true,
-	saveUninitialized: true,
+	saveUninitialized: false,
 	cookie: {
 		httpOnly: false,
 		rolling: true,
-		expires: Number(config.CookieMaxAge)
+		maxAge: Number(config.CookieMaxAge)
 	}  
 }));
 //
@@ -44,18 +41,10 @@ app.use(session({
 //
 
 
+
 //
 // Body Parser
 app.use(bodyParser.json());
-//
-// Static File Serving 
-app.use("/", express.static(__dirname + '/www'));
-//  
-// Default Document Redirect  
-app.get('/', function(req, res){ 
-    res.redirect('/index.html');
-});
-//
 //
 
 
@@ -63,8 +52,6 @@ app.get('/', function(req, res){
 // Config Based Authentication
 //
 app.post('/authenticate', function(req, res) {
-	console.log(req.params);
-	console.log(req.session.id);
 	const sessionID = req.session.id;
 	const psparams = JSON.stringify(req.body);
 	
@@ -72,7 +59,7 @@ app.post('/authenticate', function(req, res) {
 		executionPolicy: 'Bypass',
 		noProfile: true
 	});
-	
+
 	ps1.addCommand(process.cwd()+config.AuthenticationMethod + ' -JSON \'' + psparams + '\'');
 	ps1.invoke()
 	.then(output => { 
@@ -84,19 +71,19 @@ app.post('/authenticate', function(req, res) {
 			saveLoginInformation(sessionID, psparams, req);
 		} else {
 		}
-		ps1.dispose();
 		res.send(output);
+		ps1.dispose();
 	})
 	.catch(err => {
-		console.log("Failed Execution");
 		console.log(err);
-		ps1.dispose();
 		res.send(err);
-	})
+		ps1.dispose();
+	});
 });
 //
 // END Config Based Login
 //
+
 
 
 //
@@ -106,7 +93,7 @@ app.get('/ps1/get/:script', function(req, res) {
 	if (validateSessionInformation(req) == false){
 		return "Not Authenticated";
 	}
-    console.log("GET " + req.params);
+
     const script = req.params.script;
 	const psparams = JSON.stringify(req.body);
 	
@@ -114,23 +101,24 @@ app.get('/ps1/get/:script', function(req, res) {
 		executionPolicy: 'Bypass',
 		noProfile: true
 	});
-	
-	ps1.addCommand(process.cwd()+'\\ps1\\get\\' + script + ' -JSON \'' + psparams + '\'');
-	ps1.invoke()
-	.then(output => {
-		ps1.dispose();
-		res.send(output);
-	})
-	.catch(err => {
-		console.log("Failed Execution");
-		console.log(err);
-		res.send(err);
-		ps1.dispose();
-	});
+	if( script !== null ) {
+		ps1.addCommand(process.cwd()+'\\ps1\\get\\' + script + ' -JSON \'' + psparams + '\'');
+		ps1.invoke()
+		.then(output => {
+			res.send(output);
+			ps1.dispose();
+		})
+		.catch(err => {
+			console.log(err);
+			res.send(err);
+			ps1.dispose();
+		});
+	}
 });
 //
 // END Powershell GET Processor
 //
+
 
 
 //
@@ -140,6 +128,7 @@ app.post('/ps1/post/:script', function(req, res) {
 	if (validateSessionInformation(req) == false){
 		return "Not Authenticated";
 	}
+	
 	const script = req.params.script;
 	const psparams = JSON.stringify(req.body);
 	
@@ -147,57 +136,47 @@ app.post('/ps1/post/:script', function(req, res) {
 		executionPolicy: 'Bypass',
 		noProfile: true
 	});
-	
-	ps1.addCommand(process.cwd()+'\\ps1\\post\\' + script + ' -JSON \'' + psparams + '\'');
-	ps1.invoke()
-	.then(output => {
-		ps1.dispose();
-		res.send(output);
-	})
-	.catch(err => {
-		console.log("Failed Execution");
-		console.log(err);
-		res.send(err);
-		ps1.dispose();
-	});
+	//
+	if( script !== null ) {
+		ps1.addCommand(process.cwd()+'\\ps1\\post\\' + script + ' -JSON \'' + psparams + '\'');
+		ps1.invoke()
+		.then(output => {
+			res.send(output);
+			ps1.dispose();
+		})
+		.catch(err => {
+			console.log(err);
+			res.send(err);
+			ps1.dispose();
+		});
+	}
 });
 //
 // END Powershell POST Processor
 //
 
 
+
 //
 // API Helpers
 //
-app.get('/api/:APICall', function(req, res) {
-    const Call = req.params.APICall;
-	switch(Call) {
-		//
-		// Validate Session Login
-		case 'validate':
-			if(!req.session.Username) {
-				res.send({ "SessionState": "Invalid" });
-			} else {
-				res.send({ "SessionState": "Valid" });
-			}
-			break;
-		case 'logout':
-			req.session.destroy();
-			res.redirect(config.LogoutRedirectPage);
-			break;
-		//
-		// Default Login Redirected Page
-		case 'default':
-			res.redirect(config.AuthenticatedRedirectPage);
-			break;
-		default:
-			res.send({ "Error": "Improper use of API" });
-			break;
+app.get('/api/validate', function(req, res) {
+	if(!req.session.Username) {
+		res.send({ "SessionState": "Invalid" });
+	} else {
+		res.send({ "SessionState": "Valid" });
 	}
 });
-//
-// API Helpers
-//
+
+app.get('/api/logout', function(req, res) {
+	req.session.destroy();
+	res.redirect(config.LogoutRedirectPage);
+});
+
+app.get('/api/default', function(req, res) {
+	res.redirect(config.AuthenticatedRedirectPage);
+});
+
 
 
 //
@@ -215,6 +194,7 @@ app.get('/validate',function (req, res) {
 //
 
 
+
 //
 // Default Login Page Redirect
 //
@@ -224,6 +204,7 @@ app.get('/default',function (req, res) {
 //
 // END Default Login Page Redirect
 //
+
 
 
 //
@@ -238,10 +219,25 @@ app.get('/logout',function (req, res) {
 //
 
 
+
+// Static File Serving 
+app.use("/", express.static(__dirname + '/www/',  { redirect : false }));
+
+
+//  
+// Default Document Redirect  
+app.get('/', function(req, res){
+    res.redirect('/index.html');
+});
+//
+//
+
+
 //
 // 404 Handler
 //
 app.get('*',function (req, res) {
+	console.log("404");
 	res.redirect('/404.html');
 });
 //
@@ -253,7 +249,6 @@ app.get('*',function (req, res) {
 // Authentication Cookie and Session information
 //
 function saveLoginInformation(sessionID, userInfo, req){
-	const crypto = require('crypto');
 	// Add Instance of Username into Session Variables
 	userInfo = JSON.parse(userInfo);
 	req.session.Username = userInfo.Username;
@@ -292,7 +287,6 @@ function saveSessionData(req,Username){
 //
 // Save Session Data 
 //
-
 
 
 
