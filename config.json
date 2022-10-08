@@ -8,9 +8,12 @@
     "PrivateKey":"\\cert\\key.pem",
     "Certificate":"\\cert\\cert.pem",
     "CertificatePassword":"password",
+    "FSRootStaticFolder":"/www/",
+    "WebRootStaticFolder":"/ui",
     "AuthenticationEnabled":"TRUE",
     "AuthenticationMethod":"\\ps1\\auth\\adauth.ps1",
-    "AuthenticatedRedirectPage":"/index.html",
-    "LogoutRedirectPage":"/login.html",
+    "AuthenticatedRedirectPage":"/ui/index.html",
+    "Error404Page":"/ui/404.html",
+    "LogoutRedirectPage":"/ui/index.html",
     "DatabaseLocation":"db.sqlite"
 }
