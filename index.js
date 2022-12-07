@@ -223,13 +223,13 @@ app.get('/logout',function (req, res) {
 
 
 // Static File Serving 
-app.use("/", express.static(__dirname + '/www/',  { redirect : false }));
+app.use(config.WebRootStaticFolder, express.static(__dirname + config.FSRootStaticFolder,  { redirect : false }));
 
 
 //  
 // Default Document Redirect  
 app.get('/', function(req, res){
-    res.redirect('/index.html');
+    res.redirect(config.AuthenticatedRedirectPage);
 });
 //
 //
@@ -240,7 +240,7 @@ app.get('/', function(req, res){
 //
 app.get('*',function (req, res) {
 	console.log("404");
-	res.redirect('/404.html');
+	res.redirect(config.Error404Page);
 });
 //
 // END 404 Handler

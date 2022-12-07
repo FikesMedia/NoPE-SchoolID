@@ -200,7 +200,7 @@ $(document).ready(function() {
 	// Check Session State
 	$.getJSON( "/api/validate", function( output ) {
 		if(output.SessionState != "Valid") {
-			window.location.replace('/login.html');
+			window.location.replace('login.html');
 		}
 	});
 
@@ -229,7 +229,7 @@ $(document).ready(function() {
 
 
 	//Load Defaults
-	$.getJSON("./defaults.json", function(defaults){
+	$.getJSON("defaults.json", function(defaults){
 		$("#companyfield").val(defaults.Company);
 
 	});
