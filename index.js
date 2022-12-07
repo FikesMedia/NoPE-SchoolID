@@ -182,6 +182,7 @@ app.get('/api/default', function(req, res) {
 //
 // Validate Session Login
 //
+/*
 app.get('/validate',function (req, res) {
 	if(!req.session.Username) {
 		res.send({ "SessionState": "Invalid" });
@@ -189,6 +190,7 @@ app.get('/validate',function (req, res) {
 		res.send({ "SessionState": "Valid" });
 	}
 });
+*/
 //
 // END Validate Session Login
 //
